@@ -39,7 +39,7 @@ jobs:
         
          
         git clone https://github.com/linkease/nas-packages-luci ./linkease/nas-packages-luci
-        mv ./linkease/nas-packages-luci/luci-app-quickstart ./luci-app-quickstart/
+        mv ./linkease/nas-packages-luci/luci ./luci-app-quickstart/
         rm -rf ./linkease/nas-packages-luci
         rm -rf ./luci-app-quickstart/htdocs/luci-static/quickstart/index.js
         cp -af ./patch/diy/index.js luci-app-quickstart/htdocs/luci-static/quickstart/
