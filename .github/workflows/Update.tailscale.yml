@@ -39,8 +39,8 @@ jobs:
         
          
         git clone --depth=1 https://github.com/openwrt/packages -b openwrt-24.10
-        mv ./tmp/packages/net/tailscale ./packages/net/tailscale/
-        rm -rf ./tmp/packages/net
+        mv ./packages/net/tailscale ./packages/net/tailscale/
+        rm -rf ./packages/net
         
         
         
