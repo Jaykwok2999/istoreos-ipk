@@ -34,12 +34,12 @@ jobs:
     - name: Update.luci-app-gpsysupgrade
       run: |
 
-        rm -rf ./luci-app-gpsysupgrade
+        rm -rf ./patch/diy/luci-app-gpsysupgrade
         
         
          
         git clone --depth=1 https://github.com/zijieKwok/luci-app-gpsysupgrade.git -b master
-        mv ./luci-app-gpsysupgrade/luci-app-gpsysupgrade ./
+        mv ./luci-app-gpsysupgrade/luci-app-gpsysupgrade ./patch/diy/
         rm -rf ./luci-app-gpsysupgrade/
         
         
