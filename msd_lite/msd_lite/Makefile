@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=msd_lite
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rozhuk-im/msd_lite.git
 PKG_SOURCE_DATE:=2024-04-29
 PKG_SOURCE_VERSION:=db583386ca47d803e44d9adc98b1ec6a4abb5d9a
-PKG_MIRROR_HASH:=5fba56429a4a3c985259d98343c9810c6189c51b6c9faf13efbf598c1606e05c
+PKG_MIRROR_HASH:=skip
 
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immrotalwrt.org>
 PKG_LICENSE:=BSD-2-Clause
