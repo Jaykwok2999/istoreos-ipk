@@ -38,7 +38,7 @@ jobs:
         
         
          
-        git clone https://github.com/zijieKwok/luci-app-gpsysupgrade.git /luci-app-gpsysupgrade
+        git clone https://github.com/zijieKwok/luci-app-gpsysupgrade.git ./luci-app-gpsysupgrade
         
         
         
