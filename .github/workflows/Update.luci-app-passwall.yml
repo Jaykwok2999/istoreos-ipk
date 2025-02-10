@@ -38,7 +38,7 @@ jobs:
         
         
          
-        git clone https://github.com/kiddin9/kwrt-packages ./patch/wall-luci/
+        git clone https://github.com/kiddin9/kwrt-packages ./patch/wall-luci/luci-app-passwall
         
         
         
