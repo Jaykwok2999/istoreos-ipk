@@ -35,12 +35,12 @@ jobs:
       run: |
 
         rm -rf ./tailscale/tailscale
-        
+        rm -rf ./packages
         
          
         git clone --depth=1 https://github.com/openwrt/packages -b openwrt-24.10
-        mv ./packages/net/tailscale ./tailscale/
-        rm -rf ./packages/net
+        mv ./tmp/packages/net/tailscale ./tailscale/
+        rm -rf ./tmp/packages/net
         
         
         
