@@ -38,9 +38,9 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/vernesong/OpenClash.git -b main
-        mv ./kwrt-packages/luci-app-openclash ./patch/wall-luci/
-        rm -rf ./kwrt-packages
+        # git clone --depth=1 https://github.com/vernesong/OpenClash.git -b main
+        # mv ./kwrt-packages/luci-app-openclash ./patch/wall-luci/
+        # rm -rf ./kwrt-packages
         
         
         
