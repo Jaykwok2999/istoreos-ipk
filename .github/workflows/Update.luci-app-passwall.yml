@@ -31,14 +31,16 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 0  
         
-    - name: Update.tailscale
+    - name: Update.luci-app-passwall
       run: |
 
         rm -rf ./patch/wall-luci/luci-app-passwall
         
         
          
-        git clone https://github.com/kiddin9/kwrt-packages ./patch/wall-luci/luci-app-passwall
+        git clone --depth=1 https://github.com/vernesong/OpenClash.git -b main
+        mv ./kwrt-packages/luci-app-openclash ./patch/wall-luci/
+        rm -rf ./kwrt-packages
         
         
         
