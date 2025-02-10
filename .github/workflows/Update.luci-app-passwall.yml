@@ -38,8 +38,8 @@ jobs:
         
         
          
-        # git clone --depth=1 https://github.com/vernesong/OpenClash.git -b main
-        # mv ./kwrt-packages/luci-app-openclash ./patch/wall-luci/
+        # git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
+        # mv ./kwrt-packages/luci-app-passwall ./patch/wall-luci/
         # rm -rf ./kwrt-packages
         
         
