@@ -1,4 +1,4 @@
-name: Update.luci-app-openclash
+name: Update.luci-app-passwall
 on: 
   repository_dispatch:
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
     - name: Update.tailscale
       run: |
 
-        rm -rf ./patch/wall-luci/luci-app-openclash
+        rm -rf ./patch/wall-luci/luci-app-passwall
         
         
          
