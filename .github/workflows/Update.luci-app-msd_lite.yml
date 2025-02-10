@@ -35,11 +35,11 @@ jobs:
       run: |
 
         rm -rf ./msd_lite/luci-app-msd_lite
-        
+        rm -rf ./msd_lite/msd_lite
         
          
         git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/luci-app-msd_lite ./msd_lite/luci-app-msd_lite
+        mv ./kwrt-packages/msd_lite ./msd_lite/msd_lite
         rm -rf ./kwrt-packages
         
         
