@@ -38,9 +38,9 @@ jobs:
         
         
          
-        # git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        # mv ./kwrt-packages/luci-app-passwall ./patch/wall-luci/
-        # rm -rf ./kwrt-packages
+        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
+        mv ./kwrt-packages/luci-app-passwall ./patch/wall-luci/
+        rm -rf ./kwrt-packages
         
         
         
