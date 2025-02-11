@@ -770,7 +770,6 @@ for k, v in pairs(nodes_table) do
 	end
 end
 
-m:append(Template(appname .. "/global/status_bottom"))
 m:append(Template(appname .. "/global/footer"))
 
 return m
