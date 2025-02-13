@@ -38,9 +38,9 @@ jobs:
         
         
          
-        git clone https://github.com/xiaorouji/openwrt-passwall-packages.git ./patch/passwall-packages/
-        
-        
+        git clone https://github.com/xiaorouji/openwrt-passwall-packages.git
+        mv ./tmp/patch/passwall-packages/ ./*
+        rm -rf ./tmp
         
         
         
