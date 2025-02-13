@@ -39,7 +39,7 @@ jobs:
         
          
         git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages.git -b main
-        mv ./openwrt-passwall/openwrt-passwall-packages/* ./patch/openwrt-passwall-packages/
+        mv ./openwrt-passwall/openwrt-passwall-packages/* ./patch/passwall-packages/
         rm -rf ./openwrt-passwall
         rm -rf ./patch/passwall-packages/.github
         
