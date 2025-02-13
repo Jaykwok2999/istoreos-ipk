@@ -38,9 +38,28 @@ jobs:
         
         
          
+        git clone https://github.com/linkease/nas-packages-luci ./linkease/nas-packages-luci
+        mv ./linkease/nas-packages-luci/luci ./linkease/
+        rm -rf ./linkease/nas-packages-luci
+        rm -rf ./linkease/luci/luci-app-quickstart/htdocs/luci-static/quickstart/index.js
+        cp -af ./patch/diy/index.js linkease/luci/luci-app-quickstart/htdocs/luci-static/quickstart/
+        sed -i 's/services/nas/g' linkease/luci/luci-app-linkease/luasrc/controller/linkease.lua
+        sed -i 's/services/nas/g' linkease/luci/luci-app-linkease/luasrc/view/linkease_status.htm
+        git clone https://github.com/linkease/nas-packages ./linkease/nas-packages
+        mv ./linkease/nas-packages/multimedia/ffmpeg-remux ./linkease/nas-packages/
+        mv ./linkease/nas-packages/network/services/* ./linkease/nas-packages/
+        rm -rf ./linkease/nas-packages/multimedia
+        rm -rf ./linkease/nas-packages/network
+        rm -rf ./linkease/nas-packages/.git
+        rm -rf ./linkease/nas-packages/README.md
+        
         git clone https://github.com/linkease/istore ./linkease/iStore
         mv ./linkease/iStore/luci/*  ./linkease/luci/
         rm -rf ./linkease/iStore
+
+        git clone https://github.com/linkease/istore-ui ./linkease/istore-ui
+        mv ./linkease/istore-ui/app-store-ui ./linkease/luci/
+        rm -rf ./linkease/istore-ui
         
     - name: Apply
       run: |
