@@ -34,12 +34,13 @@ jobs:
     - name: Update.passwall-packages
       run: |
 
-        rm -rf ./patch/passwall-packages/*
+        rm -rf ./patch/passwall-packages
         # rm -rf ./patch/passwall-packages
         
          
-        git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages.git patch/passwall-packages -b main
-        
+        git clone https://github.com/xiaorouji/openwrt-passwall-packages ./passwall-packages
+        mv ./passwall-packages/* ./patch/passwall-packages
+        rm -rf ./passwall-packages
         rm -rf ./patch/passwall-packages/.github
         
         
