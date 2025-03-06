@@ -13,8 +13,8 @@ on:
         default: 'false'
 env:
   TZ: Asia/Shanghai
-  tailscale: Jaykwok2999/istoreos-ipk/tailscale
-  packages: Jaykwok2999/istoreos-ipk/tailscale
+  tailscale: Jaykwok2999/istoreos-ipk
+  packages: Jaykwok2999/istoreos-ipk
 
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
       - name: Check version
         id: check_version
         env:
-          url_tags: https://api.github.com/repos/${{ env.passwall }}/tags
+          url_tags: https://api.github.com/repos/${{ env.tailscale }}/tags
         run: |
           cd luci-app-tailscale
           latest_version=$(awk -F ':=' '/PKG_VERSION|PKG_RELEASE/ {print $2}' Makefile | sed ':a;N;s/\$(PKG_VERSION)-//;s/\n$//;s/\n/-/;ba')
@@ -52,8 +52,8 @@ jobs:
         if: steps.check_version.outputs.has_update == 'true'
         run: |
           echo "## :mega:Update content" >> release.txt
-          echo "![](https://img.shields.io/github/downloads/${{ env.passwall }}/${{steps.check_version.outputs.latest_version}}/total?style=flat-square)" >> release.txt
-          echo "### Passwall Info" >> release.txt
+          echo "![](https://img.shields.io/github/downloads/${{ env.tailscale }}/${{steps.check_version.outputs.latest_version}}/total?style=flat-square)" >> release.txt
+          echo "### tailscale Info" >> release.txt
           echo "**:minidisc: tailscale Version: ${{steps.check_version.outputs.latest_version}}**" >> release.txt
           touch release.txt
 
