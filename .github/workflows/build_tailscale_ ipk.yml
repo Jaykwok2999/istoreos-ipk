@@ -13,8 +13,8 @@ on:
         default: 'false'
 env:
   TZ: Asia/Shanghai
-  tailscale: Jaykwok2999/istoreos-ipk
-  packages: Jaykwok2999/istoreos-ipk
+  tailscale: Jaykwok2999/istoreos-ipk/tailscale
+  packages: Jaykwok2999/istoreos-ipk/tailscale
 
 
 jobs:
