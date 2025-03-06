@@ -4,17 +4,13 @@ name: build_tailscale_ ipk
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "ipk version"
-        required: true
-        default: "0.0.1"
       target:
         description: 'build target ["arm64", "x64", "mipsel"]'
         required: true
         default: "x64"
 env:
   TZ: Asia/Shanghai
-  IPK_NAME: luci-app-tailscale
+  IPK_NAME: tailscale/luci-app-tailscale/luci-app-tailscale
 
 permissions:
   contents: write
