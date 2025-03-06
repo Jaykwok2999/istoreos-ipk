@@ -38,8 +38,8 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/openwrt/packages -b openwrt-24.10
-        mv ./packages/net/tailscale ./tailscale/
+        git clone --depth=1 https://github.com/kiddin9/kwrt-packages -b main
+        mv ./packages/kwrt-packages/tailscale ./tailscale/
         rm -rf ./packages
         
         
