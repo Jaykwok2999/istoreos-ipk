@@ -11,7 +11,7 @@ end
 
 local fs = api.fs
 local sys = api.sys
-local has_singbox = api.finded_com("singbox")
+local has_singbox = api.finded_com("sing-box")
 local has_xray = api.finded_com("xray")
 local has_gfwlist = fs.access("/usr/share/passwall/rules/gfwlist")
 local has_chnlist = fs.access("/usr/share/passwall/rules/chnlist")
@@ -249,6 +249,13 @@ o:value("53", "53")
 o.validate = port_validate
 o:depends({ use_global_config = true })
 o:depends({ _udp_node_bool = "1" })
+
+o = s:option(DummyValue, "tips", " ")
+o.rawhtml = true
+o.cfgvalue = function(t, n)
+	return string.format('<font color="red">%s</font>',
+	translate("The port settings support single ports and ranges.<br>Separate multiple ports with commas (,).<br>Example: 21,80,443,1000:2000."))
+end
 
 o = s:option(Flag, "use_direct_list", translatef("Use %s", translate("Direct List")))
 o.default = "1"

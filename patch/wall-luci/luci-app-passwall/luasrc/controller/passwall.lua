@@ -88,13 +88,16 @@ function index()
 	entry({"admin", "services", appname, "check_passwall"}, call("app_check")).leaf = true
 	local coms = require "luci.passwall.com"
 	local com
-	for com, _ in pairs(coms) do
+	for _, com in ipairs(coms.order) do
 		entry({"admin", "services", appname, "check_" .. com}, call("com_check", com)).leaf = true
 		entry({"admin", "services", appname, "update_" .. com}, call("com_update", com)).leaf = true
 	end
 
 	--[[Backup]]
 	entry({"admin", "services", appname, "backup"}, call("create_backup")).leaf = true
+
+	--[[geoview]]
+	entry({"admin", "services", appname, "geo_view"}, call("geo_view")).leaf = true
 end
 
 local function http_write_json(content)
@@ -192,7 +195,7 @@ function get_redir_log()
 		proto = "TCP"
 	end
 	if fs.access(path .. "/" .. proto .. ".log") then
-		local content = luci.sys.exec("cat ".. path .. "/" .. proto .. ".log")
+		local content = luci.sys.exec("tail -n 19999 ".. path .. "/" .. proto .. ".log")
 		content = content:gsub("\n", "<br />")
 		luci.http.write(content)
 	else
@@ -216,7 +219,7 @@ function get_chinadns_log()
 	local flag = luci.http.formvalue("flag")
 	local path = "/tmp/etc/passwall/acl/" .. flag .. "/chinadns_ng.log"
 	if fs.access(path) then
-		local content = luci.sys.exec("cat ".. path)
+		local content = luci.sys.exec("tail -n 5000 ".. path)
 		content = content:gsub("\n", "<br />")
 		luci.http.write(content)
 	else
@@ -286,7 +289,8 @@ function connect_status()
 	local chn_list = uci:get(appname, "@global[0]", "chn_list") or "direct"
 	local gfw_list = uci:get(appname, "@global[0]", "use_gfw_list") or "1"
 	local proxy_mode = uci:get(appname, "@global[0]", "tcp_proxy_mode") or "proxy"
-	local socks_server = api.get_cache_var("GLOBAL_TCP_SOCKS_server")
+	local localhost_proxy = uci:get(appname, "@global[0]", "localhost_proxy") or "1"
+	local socks_server = (localhost_proxy == "0") and api.get_cache_var("GLOBAL_TCP_SOCKS_server") or ""
 
 	-- 兼容 curl 8.6 time_starttransfer 错误
 	local curl_ver = api.get_bin_version_cache("/usr/bin/curl", "-V 2>/dev/null | head -n 1 | awk '{print $2}' | cut -d. -f1,2 | tr -d ' \n'") or "0"
@@ -302,16 +306,19 @@ function connect_status()
 			url = "-x socks5h://" .. socks_server .. " " .. url
 		end
 	end
-	local result = luci.sys.exec('/usr/bin/curl --connect-timeout 3 -o /dev/null -I -sk ' .. url)
+	local result = luci.sys.exec('/usr/bin/curl --max-time 5 -o /dev/null -I -sk ' .. url)
 	local code = tonumber(luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $1}'") or "0")
 	if code ~= 0 then
-		local use_time = luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $2}'")
-		if use_time:find("%.") then
-			e.use_time = string.format("%.2f", use_time * 1000)
-		else
-			e.use_time = string.format("%.2f", use_time / 1000)
+		local use_time_str = luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $2}'")
+		local use_time = tonumber(use_time_str)
+		if use_time then
+			if use_time_str:find("%.") then
+				e.use_time = string.format("%.2f", use_time * 1000)
+			else
+				e.use_time = string.format("%.2f", use_time / 1000)
+			end
+			e.ping_type = "curl"
 		end
-		e.ping_type = "curl"
 	end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
@@ -344,11 +351,14 @@ function urltest_node()
 	local result = luci.sys.exec(string.format("/usr/share/passwall/test.sh url_test_node %s %s", id, "urltest_node"))
 	local code = tonumber(luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $1}'") or "0")
 	if code ~= 0 then
-		local use_time = luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $2}'")
-		if use_time:find("%.") then
-			e.use_time = string.format("%.2f", use_time * 1000)
-		else
-			e.use_time = string.format("%.2f", use_time / 1000)
+		local use_time_str = luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $2}'")
+		local use_time = tonumber(use_time_str)
+		if use_time then
+			if use_time_str:find("%.") then
+				e.use_time = string.format("%.2f", use_time * 1000)
+			else
+				e.use_time = string.format("%.2f", use_time / 1000)
+			end
 		end
 	end
 	luci.http.prepare_content("application/json")
@@ -553,4 +563,54 @@ function create_backup()
 	http.prepare_content("application/octet-stream")
 	http.write(fs.readfile(tar_file))
 	fs.remove(tar_file)
+end
+
+function geo_view()
+	local action = luci.http.formvalue("action")
+	local value = luci.http.formvalue("value")
+	if not value or value == "" then
+		http.prepare_content("text/plain")
+		http.write(i18n.translate("Please enter query content!"))
+		return
+	end
+	local geo_dir = (uci:get(appname, "@global_rules[0]", "v2ray_location_asset") or "/usr/share/v2ray/"):match("^(.*)/")
+	local geosite_path = geo_dir .. "/geosite.dat"
+	local geoip_path = geo_dir .. "/geoip.dat"
+	local geo_type, file_path, cmd
+	local geo_string = ""
+	if action == "lookup" then
+		if api.datatypes.ipaddr(value) or api.datatypes.ip6addr(value) then
+			geo_type, file_path = "geoip", geoip_path
+		else
+			geo_type, file_path = "geosite", geosite_path
+		end
+		cmd = string.format("geoview -type %s -action lookup -input '%s' -value '%s' -lowmem=true", geo_type, file_path, value)
+		geo_string = luci.sys.exec(cmd):lower()
+		if geo_string ~= "" then
+			local lines = {}
+			for line in geo_string:gmatch("([^\n]*)\n?") do
+				if line ~= "" then
+					table.insert(lines, geo_type .. ":" .. line)
+				end
+			end
+			geo_string = table.concat(lines, "\n")
+		end
+	elseif action == "extract" then
+		local prefix, list = value:match("^(geoip:)(.*)$")
+		if not prefix then
+			prefix, list = value:match("^(geosite:)(.*)$")
+		end
+		if prefix and list and list ~= "" then
+			geo_type = prefix:sub(1, -2)
+			file_path = (geo_type == "geoip") and geoip_path or geosite_path
+			cmd = string.format("geoview -type %s -action extract -input '%s' -list '%s' -lowmem=true", geo_type, file_path, list)
+			geo_string = luci.sys.exec(cmd)
+		end
+	end
+	http.prepare_content("text/plain")
+	if geo_string and geo_string ~="" then
+		http.write(geo_string)
+	else
+		http.write(i18n.translate("No results were found!"))
+	end
 end

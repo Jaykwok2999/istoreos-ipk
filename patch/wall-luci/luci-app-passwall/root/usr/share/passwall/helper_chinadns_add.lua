@@ -88,7 +88,7 @@ local function insert_array_after(array1, array2, target) --将array2插入到ar
 end
 
 local function get_geosite(list_arg, out_path)
-	local geosite_path = uci:get(appname, "@global_rules[0]", "v2ray_location_asset")
+	local geosite_path = uci:get(appname, "@global_rules[0]", "v2ray_location_asset") or "/usr/share/v2ray/"
 	geosite_path = geosite_path:match("^(.*)/") .. "/geosite.dat"
 	if not is_file_nonzero(geosite_path) then return 1 end
 	if api.is_finded("geoview") and list_arg and out_path then
@@ -495,14 +495,17 @@ if DEFAULT_TAG == "none_noip" then table.insert(config_lines, "noip-as-chnip") e
 if DEFAULT_TAG == nil or DEFAULT_TAG == "smart" or DEFAULT_TAG == "none_noip" then DEFAULT_TAG = "none" end
 
 table.insert(config_lines, "default-tag " .. DEFAULT_TAG)
-table.insert(config_lines, "cache 4096")
-table.insert(config_lines, "cache-stale 3600")
 
 if DEFAULT_TAG == "none" then
 	table.insert(config_lines, "verdict-cache 5000")
 end
 
 table.insert(config_lines, "hosts")
+
+local cert_verify = uci:get(appname, "@global[0]", "chinadns_ng_cert_verify") or 0
+if tonumber(cert_verify) == 1 then
+	table.insert(config_lines, "cert-verify")
+end
 
 if DEFAULT_TAG == "chn" then
 	log(string.format("  - 默认 DNS ：%s", DNS_LOCAL))

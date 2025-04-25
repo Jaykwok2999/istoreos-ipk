@@ -92,6 +92,7 @@ function showMsg_Redirect(redirectUrl, delay)
 						if (overlay && overlay.parentNode) {
 							overlay.parentNode.removeChild(overlay);
 						}
+						window.location.href = window.location.href;
 					}
 				}, delay);
 			});
@@ -383,7 +384,7 @@ function strToTable(str)
 end
 
 function is_normal_node(e)
-	if e and e.type and e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface") then
+	if e and e.type and e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface" or e.protocol == "_urltest") then
 		return false
 	end
 	return true
@@ -493,7 +494,8 @@ function get_valid_nodes()
 	uci:foreach(appname, "nodes", function(e)
 		e.id = e[".name"]
 		if e.type and e.remarks then
-			if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface") then
+			if (e.type == "sing-box" or e.type == "Xray") and e.protocol and
+			   (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface" or e.protocol == "_urltest") then
 				local type = e.type
 				if type == "sing-box" then type = "Sing-Box" end
 				e["remark"] = "%s：[%s] " % {type .. " " .. i18n.translatef(e.protocol), e.remarks}
@@ -543,7 +545,8 @@ end
 function get_node_remarks(n)
 	local remarks = ""
 	if n then
-		if n.protocol and (n.protocol == "_balancing" or n.protocol == "_shunt" or n.protocol == "_iface") then
+		if (n.type == "sing-box" or n.type == "Xray") and n.protocol and
+		   (n.protocol == "_balancing" or n.protocol == "_shunt" or n.protocol == "_iface" or n.protocol == "_urltest") then
 			remarks = "%s：[%s] " % {n.type .. " " .. i18n.translatef(n.protocol), n.remarks}
 		else
 			local type2 = n.type
@@ -553,9 +556,20 @@ function get_node_remarks(n)
 					protocol = "VMess"
 				elseif protocol == "vless" then
 					protocol = "VLESS"
+				elseif protocol == "shadowsocks" then
+					protocol = "SS"
+				elseif protocol == "shadowsocksr" then
+					protocol = "SSR"
+				elseif protocol == "wireguard" then
+					protocol = "WG"
+				elseif protocol == "hysteria" then
+					protocol = "HY"
+				elseif protocol == "hysteria2" then
+					protocol = "HY2"
 				else
 					protocol = protocol:gsub("^%l",string.upper)
 				end
+				if type2 == "sing-box" then type2 = "Sing-Box" end
 				type2 = type2 .. " " .. protocol
 			end
 			remarks = "%s：[%s]" % {type2, n.remarks}
@@ -896,7 +910,8 @@ local default_file_tree = {
 	armv5   = "arm.*5",
 	armv6   = "arm.*6[^4]*",
 	armv7   = "arm.*7",
-	armv8   = "arm64"
+	armv8   = "arm64",
+	riscv64 = "riscv64"
 }
 
 local function get_api_json(url)
@@ -1161,7 +1176,7 @@ end
 function get_version()
 	local version = sys.exec("opkg list-installed luci-app-passwall 2>/dev/null | awk '{print $3}'")
 	if not version or #version == 0 then
-		version = sys.exec("apk info -L luci-app-passwall 2>/dev/null | awk 'NR == 1 {print $1}' | cut -d'-' -f4-")
+		version = sys.exec("apk list luci-app-passwall 2>/dev/null | awk '/installed/ {print $1}' | cut -d'-' -f4-")
 	end
 	return version or ""
 end
