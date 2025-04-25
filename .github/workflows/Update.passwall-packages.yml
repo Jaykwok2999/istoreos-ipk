@@ -22,7 +22,7 @@ jobs:
       run : |
         git config --global user.email "194788255+Jaykwok2999@users.noreply.github.com"
         git config --global user.name "Jaykwok2999"
-        sudo timedatectl set-timezone "Asia/Shanghai
+        sudo timedatectl set-timezone "Asia/Shanghai"
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
