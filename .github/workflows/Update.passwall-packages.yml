@@ -5,7 +5,7 @@ on:
 
 # 定时触发编译
 #  schedule:
-#    - cron: 0 22 * * *
+#    - cron: 0 */1 * * *
 
 # 点赞☆Star触发编译
 #  watch:
@@ -22,7 +22,7 @@ jobs:
       run : |
         git config --global user.email "194788255+Jaykwok2999@users.noreply.github.com"
         git config --global user.name "Jaykwok2999"
-        sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo timedatectl set-timezone "Asia/Shanghai
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
@@ -31,19 +31,34 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 0  
         
-    - name: Update.passwall-packages
+    - name: Update
       run: |
 
-        rm -rf ./patch/passwall-packages
-        # rm -rf ./patch/passwall-packages
+        rm -rf ./chinadns-ng
+        rm -rf ./dns2socks
+        rm -rf ./geoview
+        rm -rf ./hysteria
+        rm -rf ./ipt2socks
+        rm -rf ./microsocks
+        rm -rf ./naiveproxy
+        rm -rf ./shadowsocks-libev
+        rm -rf ./shadowsocks-rust
+        rm -rf ./shadowsocksr-libev
+        rm -rf ./simple-obfs
+        rm -rf ./sing-box
+        rm -rf ./tcping
+        rm -rf ./trojan-plus
+        rm -rf ./tuic-client
+        rm -rf ./v2ray-geodata
+        rm -rf ./v2ray-plugin
+        rm -rf ./xray-core
+        rm -rf ./xray-plugin
+        
         
          
-        git clone https://github.com/xiaorouji/openwrt-passwall-packages ./passwall-packages/patch/passwall-packages
-        mv ./passwall-packages/patch/passwall-packages/* ./
-        rm -rf ./passwall-packages
-        rm -rf ./patch/passwall-packages/.github
-        
-        
+        git clone https://github.com/xiaorouji/openwrt-passwall-packages.git ./tmp
+        mv ./tmp/* ./
+        rm -rf ./tmp
         
     - name: Apply
       run: |
