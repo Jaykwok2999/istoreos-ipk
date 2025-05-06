@@ -39,7 +39,7 @@ jobs:
         
          
         git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/op-homebox ./op-homebox/homebox
+        mv ./kwrt-packages/homebox ./op-homebox/homebox
         rm -rf ./kwrt-packages
         git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
         mv ./kwrt-packages/luci-app-homebox ./op-homebox/luci-app-homebox
