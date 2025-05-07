@@ -38,7 +38,7 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b master
+        git clone --depth=1 https://github.com/muink/luci-app-homeproxy.git -b master
         mv ./luci-app-homeproxy/* ./patch/wall-luci/luci-app-homeproxy
         rm -rf ./luci-app-homeproxy
         rm -rf ./.gitignore
