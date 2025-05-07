@@ -31,7 +31,7 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 0  
         
-    - name: Update.homeproxy
+    - name: Update.luci-app-homeproxy
       run: |
 
         rm -rf ./patch/wall-luci/luci-app-homeproxy
@@ -40,7 +40,7 @@ jobs:
          
         git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
         mv ./kwrt-packages/luci-app-homeproxy ./patch/wall-luci/luci-app-homeproxy
-        mv ./kwrt-packages
+        rm -rf ./kwrt-packages
         
         
         
