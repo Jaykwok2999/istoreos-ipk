@@ -38,8 +38,9 @@ jobs:
         
         
          
-        git clone https://github.com/muink/luci-app-homeproxy.git -b master
-        mv ./ ./patch/wall-luci/luci-app-homeproxy
+        git clone https://github.com/muink/luci-app-homeproxy.git ./tmp
+        mv ./tmp/* ./patch/wall-luci/luci-app-homeproxy
+        rm -rf ./tmp
         rm -rf ./.gitignore
         rm -rf ./LICENSE
         
