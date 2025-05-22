@@ -34,13 +34,14 @@ jobs:
     - name: Update
       run: |
 
-        rm -rf ./patch/istoreos-files
+        #rm -rf ./patch/istoreos-files
         
         
          
-        git clone --depth=1 https://github.com/istoreos/istoreos.git -b istoreos-24.10
-        mv ./istoreos/package/istoreos-files ./patch/istoreos-files/
-        rm -rf ./istoreos/package
+        #git clone --depth=1 https://github.com/istoreos/istoreos.git -b istoreos-24.10
+        #mv ./istoreos/package/istoreos-files ./patch/istoreos-files/
+        #rm -rf ./istoreos/package
+        rm -rf ./istoreos
         
         
         
