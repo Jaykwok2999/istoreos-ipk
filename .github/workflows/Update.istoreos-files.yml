@@ -39,8 +39,8 @@ jobs:
         
          
         git clone --depth=1 https://github.com/istoreos/istoreos.git -b istoreos-24.10
-        mv ./package/istoreos-files ./patch/istoreos-files/
-        rm -rf ./package
+        mv ./istoreos/package/istoreos-files ./patch/istoreos-files/
+        rm -rf ./istoreos/package
         
         
         
