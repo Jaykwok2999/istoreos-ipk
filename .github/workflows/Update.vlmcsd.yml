@@ -38,9 +38,9 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/vlmcsd ./vlmcsd
-        rm -rf ./kwrt-packages
+        git clone --depth=1 https://github.com/immortalwrt/packages.git -b openwrt-24.10
+        mv ./packages/net/vlmcsd ./vlmcsd
+        rm -rf ./packages
         
         
         
