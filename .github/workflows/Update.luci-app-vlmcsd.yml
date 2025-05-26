@@ -38,9 +38,9 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/luci-app-vlmcsd ./patch/wall-luci/luci-app-vlmcsd
-        rm -rf ./kwrt-packages
+        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b openwrt-24.10
+        mv ./luci/applications/luci-app-vlmcsd ./patch/wall-luci/luci-app-vlmcsd
+        rm -rf ./luci
         
         
         
