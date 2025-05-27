@@ -38,9 +38,9 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/Jaykwok2999/wrt-ipk.git -b main
-        mv ./wrt-ipk/luci-app-dnsfilter ./luci-app-dnsfilter/
-        rm -rf ./wrt-ipk
+        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
+        mv ./kwrt-packages/luci-app-dnsfilter ./luci-app-dnsfilter/
+        rm -rf ./kwrt-packages
         
         
         
