@@ -36,16 +36,16 @@ jobs:
       run: |
 
         
-        rm -rf ./op-mosdns/*
-        
+        #rm -rf ./op-mosdns/*
+        rm -rf ./op-mosdns/v2ray-geodata
         
 
-        git clone https://github.com/kiddin9/kwrt-packages -b main ./op-mosdns/tmp
-        mv ./op-mosdns/tmp/luci-app-mosdns ./op-mosdns/
-        mv ./op-mosdns/tmp/mosdns ./op-mosdns/
-        mv ./op-mosdns/tmp/v2dat ./op-mosdns/
-        rm -rf ./op-mosdns/tmp     
-        git clone https://github.com/sbwml/v2ray-geodata ./op-mosdns/v2ray-geodata
+        #git clone https://github.com/kiddin9/kwrt-packages -b main ./op-mosdns/tmp
+        #mv ./op-mosdns/tmp/luci-app-mosdns ./op-mosdns/
+        #mv ./op-mosdns/tmp/mosdns ./op-mosdns/
+        #mv ./op-mosdns/tmp/v2dat ./op-mosdns/
+        #rm -rf ./op-mosdns/tmp     
+        
 
         
 
