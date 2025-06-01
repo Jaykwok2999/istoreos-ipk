@@ -1,0 +1,65 @@
+name: update.mosdns
+
+on: 
+  repository_dispatch:
+  workflow_dispatch:
+
+# 定时触发编译
+#  schedule:
+#    - cron: 0 */1 * * *
+
+# 点赞☆Star触发编译
+#  watch:
+#    types: [started]
+
+jobs:
+  Update:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone Repository
+      uses: actions/checkout@v3
+
+    - name: Set git
+      run : |
+        git config --global user.email "109743406+zijieKwok@users.noreply.github.com"
+        git config --global user.name "zijieKwok"
+        sudo timedatectl set-timezone "Asia/Shanghai"
+
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@main
+      continue-on-error: true
+      with:
+        retain_days: 1
+        keep_minimum_runs: 0  
+        
+    - name: Update
+      run: |
+
+        
+        rm -rf ./op-mosdns/*
+        
+        
+
+        git clone https://github.com/sbwml/luci-app-mosdns -b v5-lua ./op-mosdns/tmp
+        mv ./op-mosdns/tmp/luci-app-mosdns ./op-mosdns/
+        mv ./op-mosdns/tmp/mosdns ./op-mosdns/
+        mv ./op-mosdns/tmp/v2dat ./op-mosdns/
+        rm -rf ./op-mosdns/tmp     
+        git clone https://github.com/sbwml/v2ray-geodata ./op-mosdns/v2ray-geodata
+
+        
+
+    - name: Apply
+      run: |
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        git add .
+        git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
+        for pkg in $(git diff-tree --no-commit-id --name-only HEAD); do
+          if [ "$(grep "PKG_RELEASE" $pkg/Makefile)" ]; then
+            sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=$(git rev-list --count main $pkg)/" $pkg/Makefile || true
+          fi
+        done
+        git reset --soft HEAD^
+        git add .
+        git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
+        git push -f
