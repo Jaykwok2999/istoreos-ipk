@@ -40,7 +40,7 @@ jobs:
         
         
 
-        git clone --depth=1 https://github.com/sirpdboy/luci-app-nft-timecontrol ./pass
+        git clone --depth=1 https://github.com/sirpdboy/luci-app-timecontrol ./pass
         mv ./pass/luci-app-nft-timecontrol ./luci-app-nft-timecontrol
         rm -rf ./pass
 
