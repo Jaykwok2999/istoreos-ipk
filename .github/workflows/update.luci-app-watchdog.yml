@@ -41,7 +41,7 @@ jobs:
         
 
         git clone --depth=1 https://github.com/sirpdboy/luci-app-watchdog ./pass
-        mv ./pass/ddns-go ./ddns-go
+        mv ./pass/luci-app-watchdog ./luci-app-watchdog
         rm -rf ./pass
 
         
