@@ -37,11 +37,15 @@ jobs:
 
         
         rm -rf ./luci-app-watchdog
-        
+        rm -rf ./watchdog
         
 
         git clone --depth=1 https://github.com/sirpdboy/luci-app-watchdog ./pass
         mv ./pass/luci-app-watchdog ./luci-app-watchdog
+        rm -rf ./pass
+
+        git clone --depth=1 https://github.com/sirpdboy/luci-app-watchdog ./pass
+        mv ./pass/watchdog ./watchdog
         rm -rf ./pass
 
         
