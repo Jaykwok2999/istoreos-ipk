@@ -95,7 +95,13 @@ function index()
 	entry({"admin", "services", "openclash", "rule-providers-config"},cbi("openclash/rule-providers-config"), nil).leaf = true
 	entry({"admin", "services", "openclash", "config"},form("openclash/config"),_("Config Manage"), 80).leaf = true
 	entry({"admin", "services", "openclash", "log"},cbi("openclash/log"),_("Server Logs"), 90).leaf = true
+	entry({"admin", "services", "openclash", "myip_check"}, call("action_myip_check"))
+	entry({"admin", "services", "openclash", "website_check"}, call("action_website_check"))
+	entry({"admin", "services", "openclash", "proxy_info"}, call("action_proxy_info"))
+	entry({"admin", "services", "openclash", "oc_settings"}, call("action_oc_settings"))
+	entry({"admin", "services", "openclash", "switch_oc_setting"}, call("action_switch_oc_setting"))
 end
+
 local fs = require "luci.openclash"
 local json = require "luci.jsonc"
 local uci = require("luci.model.uci").cursor()
@@ -1804,4 +1810,568 @@ function action_announcement()
 	luci.http.write_json({
 		content = info;
 	})
+end
+
+function action_myip_check()
+    local result = {}
+    local random = math.random(100000000)
+    
+    local services = {
+        {
+            name = "upaiyun",
+            url = string.format("https://pubstatic.b0.upaiyun.com/?_upnode&z=%d", random),
+            parser = function(data)
+                if data and data ~= "" then
+                    local ok, upaiyun_json = pcall(json.parse, data)
+                    if ok and upaiyun_json and upaiyun_json.remote_addr then
+                        local geo_parts = {}
+                        if upaiyun_json.remote_addr_location then
+                            if upaiyun_json.remote_addr_location.country and upaiyun_json.remote_addr_location.country ~= "" then
+                                table.insert(geo_parts, upaiyun_json.remote_addr_location.country)
+                            end
+                            if upaiyun_json.remote_addr_location.province and upaiyun_json.remote_addr_location.province ~= "" then
+                                table.insert(geo_parts, upaiyun_json.remote_addr_location.province)
+                            end
+                            if upaiyun_json.remote_addr_location.city and upaiyun_json.remote_addr_location.city ~= "" then
+                                table.insert(geo_parts, upaiyun_json.remote_addr_location.city)
+                            end
+                            if upaiyun_json.remote_addr_location.isp and upaiyun_json.remote_addr_location.isp ~= "" then
+                                table.insert(geo_parts, upaiyun_json.remote_addr_location.isp)
+                            end
+                        end
+                        
+                        return {
+                            ip = upaiyun_json.remote_addr,
+                            geo = table.concat(geo_parts, " ")
+                        }
+                    end
+                end
+                return nil
+            end
+        },
+        {
+            name = "ipip",
+            url = string.format("http://myip.ipip.net?z=%d", random),
+            parser = function(data)
+                if data and data ~= "" then
+                    local ip = string.match(data, "当前 IP：([%d%.]+)")
+                    local geo = string.match(data, "来自于：(.+)")
+                    
+                    if ip and geo then
+                        geo = string.gsub(geo, "%s+", " ")
+                        geo = string.gsub(geo, "^%s*(.-)%s*$", "%1")
+                        
+                        return {
+                            ip = ip,
+                            geo = geo
+                        }
+                    end
+                end
+                return nil
+            end
+        },
+        {
+            name = "ipsb",
+            url = string.format("https://api-ipv4.ip.sb/geoip?z=%d", random),
+            parser = function(data)
+                if data and data ~= "" then
+                    local ok, ipsb_json = pcall(json.parse, data)
+                    if ok and ipsb_json and ipsb_json.ip then
+                        local geo_parts = {}
+                        if ipsb_json.country and ipsb_json.country ~= "" then
+                            table.insert(geo_parts, ipsb_json.country)
+                        end
+                        if ipsb_json.isp and ipsb_json.isp ~= "" then
+                            table.insert(geo_parts, ipsb_json.isp)
+                        end
+                        
+                        return {
+                            ip = ipsb_json.ip,
+                            geo = table.concat(geo_parts, " ")
+                        }
+                    end
+                end
+                return nil
+            end
+        },
+        {
+            name = "ipify",
+            url = string.format("https://api.ipify.org/?format=json&z=%d", random),
+            parser = function(data)
+                if data and data ~= "" then
+                    local ok, ipify_json = pcall(json.parse, data)
+                    if ok and ipify_json and ipify_json.ip then
+                        return {
+                            ip = ipify_json.ip,
+                            geo = ""
+                        }
+                    end
+                end
+                return nil
+            end
+        }
+    }
+    
+    -- 并发查询
+    local function create_concurrent_query(service)
+        local fdi, fdo = nixio.pipe()
+        if not fdi or not fdo then
+            return nil
+        end
+        
+        local pid = nixio.fork()
+        
+        if pid > 0 then
+            fdo:close()
+            return {
+                pid = pid,
+                service_name = service.name,
+                fdi = fdi,
+                closed = false,
+                reader = function()
+                    local buffer = fdi:read(4096)
+                    if buffer and #buffer > 0 then
+                        return buffer
+                    else
+                        return nil
+                    end
+                end,
+                close = function()
+                    if fdi and not fdi.closed then
+                        pcall(fdi.close, fdi)
+                        fdi.closed = true
+                    end
+                end
+            }
+        elseif pid == 0 then
+            nixio.dup(fdo, nixio.stdout)
+            fdi:close()
+            fdo:close()
+            
+            local cmd = string.format(
+                'curl -sL -m 10 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "%s" 2>/dev/null',
+                service.url
+            )
+            nixio.exec("/bin/sh", "-c", cmd)
+        else
+            if fdi then fdi:close() end
+            if fdo then fdo:close() end
+            return nil
+        end
+    end
+    
+    local queries = {}
+    
+    for _, service in ipairs(services) do
+        local query = create_concurrent_query(service)
+        if query then
+            queries[service.name] = {
+                query = query,
+                parser = service.parser,
+                data = ""
+            }
+        end
+    end
+    
+    if next(queries) == nil then
+        luci.http.prepare_content("application/json")
+        luci.http.write_json({
+            error = "Failed to create any queries"
+        })
+        return
+    end
+    
+    local max_iterations = 150
+    local iteration = 0
+    local completed = {}
+    
+    while iteration < max_iterations do
+        iteration = iteration + 1
+        
+        for name, info in pairs(queries) do
+            if not completed[name] then
+                local wpid, stat = nixio.waitpid(info.query.pid, "nohang")
+                local buffer = info.query.reader()
+                
+                if buffer then
+                    info.data = info.data .. buffer
+                end
+                
+                if wpid then
+                    pcall(info.query.close)
+                    completed[name] = true
+                    
+                    local parsed_result = info.parser(info.data)
+                    if parsed_result then
+                        result[name] = parsed_result
+                    end
+                    
+                    queries[name] = nil
+                else
+                    local still_running = luci.sys.call(string.format("kill -0 %d 2>/dev/null", info.query.pid)) == 0
+                    if not still_running then
+                        pcall(info.query.close)
+                        completed[name] = true
+                        
+                        local parsed_result = info.parser(info.data)
+                        if parsed_result then
+                            result[name] = parsed_result
+                        end
+                        
+                        queries[name] = nil
+                    end
+                end
+            end
+        end
+        
+        local remaining_count = 0
+        for _ in pairs(queries) do
+            remaining_count = remaining_count + 1
+        end
+        
+        if remaining_count == 0 then
+            break
+        end
+        
+        nixio.nanosleep(0, 100000000)
+    end
+    
+    for name, info in pairs(queries) do
+        if not completed[name] then
+            pcall(nixio.kill, info.query.pid, nixio.const.SIGTERM)
+            pcall(nixio.waitpid, info.query.pid, 0)
+            pcall(info.query.close)
+        end
+    end
+    
+    if result.ipify and result.ipify.ip then
+        local geo_cmd = string.format(
+            'curl -sL -m 8 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" "https://api-ipv4.ip.sb/geoip/%s" 2>/dev/null',
+            result.ipify.ip
+        )
+        local geo_data = luci.sys.exec(geo_cmd)
+        
+        if geo_data and geo_data ~= "" then
+            local ok_geo, geo_json = pcall(json.parse, geo_data)
+            if ok_geo and geo_json and geo_json.ip then
+                local geo_parts = {}
+                if geo_json.country and geo_json.country ~= "" then
+                    table.insert(geo_parts, geo_json.country)
+                end
+                if geo_json.isp and geo_json.isp ~= "" then
+                    table.insert(geo_parts, geo_json.isp)
+                end
+                result.ipify.geo = table.concat(geo_parts, " ")
+            end
+        end
+    end
+    
+    luci.http.prepare_content("application/json")
+    luci.http.write_json(result)
+end
+
+function action_website_check()
+    local domain = luci.http.formvalue("domain")
+    local result = {
+        success = false,
+        response_time = 0,
+        error = ""
+    }
+    
+    if not domain then
+        result.error = "Missing domain parameter"
+        luci.http.prepare_content("application/json")
+        luci.http.write_json(result)
+        return
+    end
+    
+    local cmd = string.format(
+        'curl -sL -m 8 -w "%%{http_code},%%{time_total}" "https://%s/favicon.ico" -o /dev/null 2>/dev/null',
+        domain
+    )
+    
+    local output = luci.sys.exec(cmd)
+    
+    if output and output ~= "" then
+        local http_code, time_total = output:match("(%d+),([%d%.]+)")
+        
+        if http_code and tonumber(http_code) then
+            local code = tonumber(http_code)
+            local response_time = math.floor((tonumber(time_total) or 0) * 1000)
+            
+            if code >= 200 and code < 400 then
+                result.success = true
+                result.response_time = response_time
+            elseif code == 404 or code == 403 then
+                result.success = true
+                result.response_time = response_time
+            else
+                result.success = false
+                result.error = "HTTP " .. code
+                result.response_time = response_time
+            end
+        else
+            result.success = false
+            result.error = "Connection failed"
+        end
+    else
+        result.success = false
+        result.error = "No response"
+    end
+    
+    luci.http.prepare_content("application/json")
+    luci.http.write_json(result)
+end
+
+function action_proxy_info()
+    local result = {
+        mixed_port = "",
+        auth_user = "",
+        auth_pass = ""
+    }
+    
+    local mixed_port = uci:get("openclash", "config", "mixed_port")
+    if mixed_port and mixed_port ~= "" then
+        result.mixed_port = mixed_port
+    else
+        result.mixed_port = "7893"
+    end
+    
+    uci:foreach("openclash", "authentication", function(section)
+        if section.enabled == "1" and result.auth_user == "" then
+            if section.username and section.username ~= "" then
+                result.auth_user = section.username
+            end
+            if section.password and section.password ~= "" then
+                result.auth_pass = section.password
+            end
+            return false
+        end
+    end)
+    
+    luci.http.prepare_content("application/json")
+    luci.http.write_json(result)
+end
+
+function action_oc_settings()
+    local result = {
+        meta_sniffer = "0",
+        respect_rules = "0",
+		oversea = "0"
+    }
+
+    local meta_sniffer = uci:get("openclash", "config", "enable_meta_sniffer")
+    if meta_sniffer == "1" then
+        result.meta_sniffer = "1"
+    end
+    
+    local respect_rules = uci:get("openclash", "config", "enable_respect_rules")
+    if respect_rules == "1" then
+        result.respect_rules = "1"
+    end
+
+    local oversea = uci:get("openclash", "config", "china_ip_route")
+    if oversea == "1" then
+        result.oversea = "1"
+    elseif oversea == "2" then
+        result.oversea = "2"
+    else
+        result.oversea = "0"
+    end
+    
+    luci.http.prepare_content("application/json")
+    luci.http.write_json(result)
+end
+
+function action_switch_oc_setting()
+    local setting = luci.http.formvalue("setting")
+    local value = luci.http.formvalue("value")
+    local info = ""
+    
+    if not setting or not value then
+        luci.http.status(400, "Missing parameters")
+        return
+    end
+    
+    if setting == "meta_sniffer" then
+        uci:set("openclash", "config", "enable_meta_sniffer", value)
+        uci:commit("openclash")
+        
+        if is_running() then
+            local config_path = uci:get("openclash", "config", "config_path")
+            if not config_path then
+                luci.http.status(500, "No config path found")
+                return
+            end
+            
+            local config_filename = fs.basename(config_path)
+            local runtime_config_path = "/etc/openclash/" .. config_filename
+            
+            local ruby_cmd
+            if value == "1" then
+                ruby_cmd = string.format([[
+                    ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
+                    begin
+                        config = File.exist?('%s') ? YAML.load_file('%s') : {}
+                        config = {} if config == false
+                        
+                        custom_sniffer_path = '/etc/openclash/custom/openclash_custom_sniffer.yaml'
+                        if File.exist?(custom_sniffer_path)
+                            custom_sniffer = YAML.load_file(custom_sniffer_path)
+                            if custom_sniffer && custom_sniffer['sniffer']
+                                config['sniffer'] = custom_sniffer['sniffer']
+                                unless config['sniffer']['sniff']
+                                    config['sniffer']['sniff'] = {
+                                        'QUIC' => { 'ports' => [443] },
+                                        'TLS' => { 'ports' => [443, '8443'] },
+                                        'HTTP' => { 'ports' => [80, '8080-8880'], 'override-destination' => true }
+                                    }
+                                end
+                            end
+                        end
+                        
+                        unless config['sniffer']
+                            config['sniffer'] = {
+                                'enable' => true,
+                                'override-destination' => false,
+                                'sniff' => {
+                                    'QUIC' => { 'ports' => [443] },
+                                    'TLS' => { 'ports' => [443, '8443'] },
+                                    'HTTP' => { 'ports' => [80, '8080-8880'], 'override-destination' => true }
+                                },
+                                'force-domain' => ['+.netflix.com', '+.nflxvideo.net', '+.amazonaws.com', '+.media.dssott.com'],
+                                'skip-domain' => ['+.apple.com', 'Mijia Cloud', 'dlg.io.mi.com', '+.oray.com', '+.sunlogin.net', '+.push.apple.com'],
+                                'parse-pure-ip' => true
+                            }
+                        else
+                            config['sniffer']['enable'] = true
+                            unless config['sniffer']['sniff']
+                                config['sniffer']['sniff'] = {
+                                    'QUIC' => { 'ports' => [443] },
+                                    'TLS' => { 'ports' => [443, '8443'] },
+                                    'HTTP' => { 'ports' => [80, '8080-8880'], 'override-destination' => true }
+                                }
+                            end
+                        end
+                        
+                        File.write('%s', config.to_yaml)
+                    rescue => e
+                        puts \"Error: #{e.message}\"
+                        exit 1
+                    end
+                    "
+                ]], runtime_config_path, runtime_config_path, runtime_config_path)
+            else
+                ruby_cmd = string.format([[
+                    ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
+                    begin
+                        config = File.exist?('%s') ? YAML.load_file('%s') : {}
+                        config = {} if config == false
+                        
+                        config['sniffer'] = { 'enable' => false }
+                        
+                        File.write('%s', config.to_yaml)
+                    rescue => e
+                        puts \"Error: #{e.message}\"
+                        exit 1
+                    end
+                    "
+                ]], runtime_config_path, runtime_config_path, runtime_config_path)
+            end
+            
+            local ruby_result = luci.sys.call(ruby_cmd)
+            if ruby_result ~= 0 then
+                luci.http.status(500, "Failed to modify config file")
+                return
+            end
+            
+            local daip = daip()
+            local dase = dase() or ""
+            local cn_port = cn_port()
+            if not daip or not cn_port then 
+                luci.http.status(500, "Switch Failed") 
+                return 
+            end
+            
+            info = luci.sys.exec(string.format('curl -sL -m 10 -H "Content-Type: application/json" -H "Authorization: Bearer %s" -XPUT http://"%s":"%s"/configs?force=true -d \'{"path":"%s"}\' 2>&1', dase, daip, cn_port, runtime_config_path))
+            
+            if info ~= "" then
+                luci.http.status(500, "Switch Failed")
+                return
+            end
+        end
+        
+    elseif setting == "respect_rules" then
+        uci:set("openclash", "config", "enable_respect_rules", value)
+        uci:commit("openclash")
+        
+        if is_running() then
+            local config_path = uci:get("openclash", "config", "config_path")
+            if not config_path then
+                luci.http.status(500, "No config path found")
+                return
+            end
+            
+            local config_filename = fs.basename(config_path)
+            local runtime_config_path = "/etc/openclash/" .. config_filename
+            
+            local ruby_cmd = string.format([[
+                ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
+                begin
+                    config = File.exist?('%s') ? YAML.load_file('%s') : {}
+                    config = {} if config == false
+                    
+                    config['dns'] = {} unless config['dns']
+                    config['dns']['respect-rules'] = %s
+                    
+                    File.write('%s', config.to_yaml)
+                rescue => e
+                    puts \"Error: #{e.message}\"
+                    exit 1
+                end
+                "
+            ]], runtime_config_path, runtime_config_path, value == "1" and "true" or "false", runtime_config_path)
+            
+            local ruby_result = luci.sys.call(ruby_cmd)
+            if ruby_result ~= 0 then
+                luci.http.status(500, "Failed to modify config file")
+                return
+            end
+            
+            local daip = daip()
+            local dase = dase() or ""
+            local cn_port = cn_port()
+            if not daip or not cn_port then 
+                luci.http.status(500, "Switch Failed") 
+                return 
+            end
+            
+            info = luci.sys.exec(string.format('curl -sL -m 10 -H "Content-Type: application/json" -H "Authorization: Bearer %s" -XPUT http://"%s":"%s"/configs?force=true -d \'{"path":"%s"}\' 2>&1', dase, daip, cn_port, runtime_config_path))
+            
+            if info ~= "" then
+                luci.http.status(500, "Switch Failed")
+                return
+            end
+        end
+        
+    elseif setting == "oversea" then
+        uci:set("openclash", "config", "china_ip_route", value)
+        uci:commit("openclash")
+        
+        if is_running() then
+            luci.sys.exec("/etc/init.d/openclash restart >/dev/null 2>&1 &")
+        end
+        
+    else
+        luci.http.status(400, "Invalid setting")
+        return
+    end
+    
+    luci.http.prepare_content("application/json")
+    luci.http.write_json({
+        status = "success",
+        setting = setting,
+        value = value,
+        info = info
+    })
 end
