@@ -2087,33 +2087,73 @@ function action_website_check()
     end
     
     local cmd = string.format(
-        'curl -sL -m 8 -w "%%{http_code},%%{time_total}" "https://%s/favicon.ico" -o /dev/null 2>/dev/null',
+        'curl -sL -m 5 --connect-timeout 3 -w "%%{http_code},%%{time_total},%%{time_connect},%%{time_appconnect}" "https://%s/favicon.ico" -o /dev/null 2>/dev/null',
         domain
     )
     
     local output = luci.sys.exec(cmd)
     
     if output and output ~= "" then
-        local http_code, time_total = output:match("(%d+),([%d%.]+)")
+        local http_code, time_total, time_connect, time_appconnect = output:match("(%d+),([%d%.]+),([%d%.]+),([%d%.]+)")
         
         if http_code and tonumber(http_code) then
             local code = tonumber(http_code)
-            local response_time = math.floor((tonumber(time_total) or 0) * 1000)
+            local response_time = 0
+            if time_appconnect and tonumber(time_appconnect) and tonumber(time_appconnect) > 0 then
+                response_time = math.floor(tonumber(time_appconnect) * 1000)
+            elseif time_connect and tonumber(time_connect) then
+                response_time = math.floor(tonumber(time_connect) * 1000)
+            else
+                response_time = math.floor((tonumber(time_total) or 0) * 1000)
+            end
             
             if code >= 200 and code < 400 then
                 result.success = true
                 result.response_time = response_time
-            elseif code == 404 or code == 403 then
+            elseif code == 403 or code == 404 then
                 result.success = true
                 result.response_time = response_time
             else
-                result.success = false
-                result.error = "HTTP " .. code
-                result.response_time = response_time
+                local fallback_cmd = string.format(
+                    'curl -sI -m 3 --connect-timeout 2 -w "%%{http_code},%%{time_total},%%{time_appconnect}" "https://%s/" -o /dev/null 2>/dev/null',
+                    domain
+                )
+                local fallback_output = luci.sys.exec(fallback_cmd)
+                
+                if fallback_output and fallback_output ~= "" then
+                    local fb_code, fb_total, fb_appconnect = fallback_output:match("(%d+),([%d%.]+),([%d%.]+)")
+                    if fb_code and tonumber(fb_code) then
+                        local fb_code_num = tonumber(fb_code)
+                        local fb_response_time = 0
+                        if fb_appconnect and tonumber(fb_appconnect) and tonumber(fb_appconnect) > 0 then
+                            fb_response_time = math.floor(tonumber(fb_appconnect) * 1000)
+                        else
+                            fb_response_time = math.floor((tonumber(fb_total) or 0) * 1000)
+                        end
+                        
+                        if fb_code_num >= 200 and fb_code_num < 400 then
+                            result.success = true
+                            result.response_time = fb_response_time
+                        elseif fb_code_num == 403 or fb_code_num == 404 then
+                            result.success = true
+                            result.response_time = fb_response_time
+                        else
+                            result.success = false
+                            result.error = "HTTP " .. fb_code_num
+                            result.response_time = fb_response_time
+                        end
+                    else
+                        result.success = false
+                        result.error = "Connection failed"
+                    end
+                else
+                    result.success = false
+                    result.error = "Connection failed"
+                end
             end
         else
             result.success = false
-            result.error = "Connection failed"
+            result.error = "Invalid response"
         end
     else
         result.success = false
@@ -2582,9 +2622,9 @@ function action_generate_pac()
     local pac_filename = nil
     local pac_file_path = nil
     local random_suffix = nil
-    
+
     luci.sys.call("mkdir -p " .. pac_dir)
-    
+
     local find_cmd = "find " .. pac_dir .. " -name 'pac_*' -type f 2>/dev/null"
     local existing_files = luci.sys.exec(find_cmd)
     if existing_files and existing_files ~= "" then
@@ -2592,16 +2632,20 @@ function action_generate_pac()
             if nixio.fs.access(file_path) then
                 local file_content = fs.readfile(file_path)
                 if file_content then
-                    local existing_proxy = string.match(file_content, 'return "([^"]*)"')
+                    local existing_proxy = string.match(file_content, 'return%s+"(PROXY%s+[^"]*)"')
+                    if not existing_proxy then
+                        existing_proxy = string.match(file_content, 'return%s*"(PROXY%s+[^"]*)"')
+                    end
+                    
                     if existing_proxy and existing_proxy == new_proxy_string then
                         pac_filename = file_path:match("([^/]+)$")
                         pac_file_path = file_path
                         random_suffix = pac_filename:match("^pac_(.+)$")
                         break
-                    elseif existing_proxy and string.find(existing_proxy, "PROXY [%d%.]+:[%d]+") then
+                    elseif existing_proxy and string.find(existing_proxy, "^PROXY%s+[%d%.]+:[%d]+") then
                         local updated_content = string.gsub(file_content, 
-                            'return "PROXY [^"]*";',
-                            'return "' .. new_proxy_string .. '";')
+                            'return%s*"PROXY%s+[^"]*"',
+                            'return "' .. new_proxy_string .. '"')
                         
                         if updated_content ~= file_content then
                             local file = io.open(file_path, "w")
@@ -2741,44 +2785,19 @@ function generate_pac_content(proxy_ip, proxy_port, auth_user, auth_pass)
             for line in content:gmatch("[^\r\n]+") do
                 line = line:match("^%s*(.-)%s*$")
                 if line and line ~= "" and not line:match("^//") and not line:match("^#") then
-                    -- CIDR：192.168.0.0/16
                     local network, mask = line:match("([%d%.]+)/(%d+)")
                     if network and mask then
                         local mask_bits = tonumber(mask)
                         if mask_bits and mask_bits >= 0 and mask_bits <= 32 then
                             local subnet_masks = {
-                                [0] = "0.0.0.0",
-                                [1] = "128.0.0.0",
-                                [2] = "192.0.0.0",
-                                [3] = "224.0.0.0",
-                                [4] = "240.0.0.0",
-                                [5] = "248.0.0.0",
-                                [6] = "252.0.0.0",
-                                [7] = "254.0.0.0",
-                                [8] = "255.0.0.0",
-                                [9] = "255.128.0.0",
-                                [10] = "255.192.0.0",
-                                [11] = "255.224.0.0",
-                                [12] = "255.240.0.0",
-                                [13] = "255.248.0.0",
-                                [14] = "255.252.0.0",
-                                [15] = "255.254.0.0",
-                                [16] = "255.255.0.0",
-                                [17] = "255.255.128.0",
-                                [18] = "255.255.192.0",
-                                [19] = "255.255.224.0",
-                                [20] = "255.255.240.0",
-                                [21] = "255.255.248.0",
-                                [22] = "255.255.252.0",
-                                [23] = "255.255.254.0",
-                                [24] = "255.255.255.0",
-                                [25] = "255.255.255.128",
-                                [26] = "255.255.255.192",
-                                [27] = "255.255.255.224",
-                                [28] = "255.255.255.240",
-                                [29] = "255.255.255.248",
-                                [30] = "255.255.255.252",
-                                [31] = "255.255.255.254",
+                                [0] = "0.0.0.0", [1] = "128.0.0.0", [2] = "192.0.0.0", [3] = "224.0.0.0",
+                                [4] = "240.0.0.0", [5] = "248.0.0.0", [6] = "252.0.0.0", [7] = "254.0.0.0",
+                                [8] = "255.0.0.0", [9] = "255.128.0.0", [10] = "255.192.0.0", [11] = "255.224.0.0",
+                                [12] = "255.240.0.0", [13] = "255.248.0.0", [14] = "255.252.0.0", [15] = "255.254.0.0",
+                                [16] = "255.255.0.0", [17] = "255.255.128.0", [18] = "255.255.192.0", [19] = "255.255.224.0",
+                                [20] = "255.255.240.0", [21] = "255.255.248.0", [22] = "255.255.252.0", [23] = "255.255.254.0",
+                                [24] = "255.255.255.0", [25] = "255.255.255.128", [26] = "255.255.255.192", [27] = "255.255.255.224",
+                                [28] = "255.255.255.240", [29] = "255.255.255.248", [30] = "255.255.255.252", [31] = "255.255.255.254",
                                 [32] = "255.255.255.255"
                             }
                             local subnet_mask = subnet_masks[mask_bits]
@@ -2787,7 +2806,6 @@ function generate_pac_content(proxy_ip, proxy_port, auth_user, auth_pass)
                             end
                         end
                     else
-                        -- IP：192.168.1.1
                         local single_ip = line:match("^([%d%.]+)$")
                         if single_ip and single_ip:match("^%d+%.%d+%.%d+%.%d+$") then
                             table.insert(ipv4_networks, {network = single_ip, mask = "255.255.255.255"})
@@ -2806,12 +2824,10 @@ function generate_pac_content(proxy_ip, proxy_port, auth_user, auth_pass)
             for line in content:gmatch("[^\r\n]+") do
                 line = line:match("^%s*(.-)%s*$")
                 if line and line ~= "" and not line:match("^//") and not line:match("^#") then
-                    -- CIDR：2001:db8::/32
                     local prefix, prefix_len = line:match("([:%da-fA-F]+)/(%d+)")
                     if prefix and prefix_len then
                         table.insert(ipv6_networks, {prefix = prefix, prefix_len = tonumber(prefix_len)})
                     else
-                        -- IPv6
                         local single_ipv6 = line:match("^([:%da-fA-F]+)$")
                         if single_ipv6 and single_ipv6:match("^[:%da-fA-F]+$") then
                             table.insert(ipv6_networks, {prefix = single_ipv6, prefix_len = 128})
@@ -2822,7 +2838,6 @@ function generate_pac_content(proxy_ip, proxy_port, auth_user, auth_pass)
         end
     end
     
-    -- IPv4
     local ipv4_checks = {}
     for _, net in ipairs(ipv4_networks) do
         table.insert(ipv4_checks, string.format('isInNet(resolved_ip, "%s", "%s")', net.network, net.mask))
@@ -2837,7 +2852,6 @@ function generate_pac_content(proxy_ip, proxy_port, auth_user, auth_pass)
         if net.prefix_len == 128 then
             table.insert(ipv6_checks, string.format('resolved_ipv6 === "%s"', net.prefix))
         else
-            -- CIDR
             local prefix_hex = net.prefix:gsub(":+$", "")
             table.insert(ipv6_checks, string.format('resolved_ipv6.indexOf("%s") === 0', prefix_hex))
         end
@@ -2848,12 +2862,53 @@ function generate_pac_content(proxy_ip, proxy_port, auth_user, auth_pass)
     end
     
     local pac_script = string.format([[
+// OpenClash PAC File
+var _failureCount = 0;
+var _lastCheckTime = 0;
+var _isProxyDown = false;
+var _checkInterval = 300000; // 5分钟 = 300000毫秒
+
+// Access Check
+function _checkNetworkConnectivity() {
+    var currentTime = Date.now();
+    
+    if (currentTime - _lastCheckTime < _checkInterval) {
+        return !_isProxyDown;
+    }
+    
+    _lastCheckTime = currentTime;
+    
+    try {
+        var test1 = dnsResolve("www.gstatic.com");
+        var test2 = dnsResolve("captive.apple.com");
+        
+        if (test1 || test2) {
+            if (_isProxyDown) {
+                _isProxyDown = false;
+                _failureCount = 0;
+            }
+            return true;
+        } else {
+            _failureCount++;
+            if (_failureCount >= 3) {
+                _isProxyDown = true;
+            }
+            return false;
+        }
+    } catch (e) {
+        _failureCount++;
+        if (_failureCount >= 3) {
+            _isProxyDown = true;
+        }
+        return false;
+    }
+}
+
 function FindProxyForURL(url, host) {
-    // 保留IP地址
     if (isPlainHostName(host) || 
-        host == "127.0.0.1" || 
-        host == "::1" || 
-        host == "localhost") {
+        host === "127.0.0.1" || 
+        host === "::1" || 
+        host === "localhost") {
         return "DIRECT";
     }
     
@@ -2869,7 +2924,15 @@ function FindProxyForURL(url, host) {
         %s
     }
     
-    return "%s";
+    if (_checkNetworkConnectivity()) {
+        return "%s";
+    } else {
+        return "DIRECT";
+    }
+}
+
+function FindProxyForURLEx(url, host) {
+    return FindProxyForURL(url, host);
 }
 ]], ipv4_check_code, ipv6_check_code, proxy_string)
     
