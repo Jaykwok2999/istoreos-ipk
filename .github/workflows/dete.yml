@@ -34,8 +34,8 @@ jobs:
     - name: Update
       run: |
 
-        rm -rf ./linkease
-        
+        rm -rf ./patch/wall-luci/luci-app-passwall
+        rm -rf ./patch/wall-luci/luci-app-openclash
         
          
         
