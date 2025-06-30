@@ -38,9 +38,9 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall.git -b main
-        mv ./openwrt-passwall/luci-app-passwall ./patch/wall-luci/
-        rm -rf ./openwrt-passwall
+        # git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall.git -b main
+        # mv ./openwrt-passwall/luci-app-passwall ./patch/wall-luci/
+        # rm -rf ./openwrt-passwall
         
         
         
