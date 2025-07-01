@@ -38,9 +38,9 @@ jobs:
         
         
          
-        # git clone --depth=1 https://github.com/vernesong/OpenClash.git -b dev
-        # mv ./OpenClash/luci-app-openclash ./
-        # rm -rf ./OpenClash
+        git clone --depth=1 https://github.com/vernesong/OpenClash.git -b dev
+        mv ./OpenClash/luci-app-openclash ./
+        rm -rf ./OpenClash
         
         
         
