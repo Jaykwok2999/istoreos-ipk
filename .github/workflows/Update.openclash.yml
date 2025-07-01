@@ -34,12 +34,12 @@ jobs:
     - name: Update
       run: |
 
-        rm -rf ./patch/wall-luci/luci-app-openclash
+        rm -rf ./luci-app-openclash
         
         
          
         # git clone --depth=1 https://github.com/vernesong/OpenClash.git -b dev
-        # mv ./OpenClash/luci-app-openclash ./patch/wall-luci/
+        # mv ./OpenClash/luci-app-openclash ./
         # rm -rf ./OpenClash
         
         
