@@ -13,7 +13,7 @@ on:
 
 jobs:
   Update:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Clone Repository
       uses: actions/checkout@v4
@@ -43,6 +43,8 @@ jobs:
         rm -rf ./tmp
         sed -i 's/services/nas/g' luci-app-quickfile/htdocs/luci-static/resources/view/system/quickfile.js
         sed -i 's/services/nas/g' luci-app-quickfile/blob/main/luci-app-quickfile/root/usr/share/luci/menu.d/luci-app-quickfile.json
+        
+        
         
         
     - name: Apply
