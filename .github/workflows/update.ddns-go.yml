@@ -36,13 +36,13 @@ jobs:
       run: |
 
         
-        #rm -rf ./luci-app-ddns-go
+        rm -rf ./luci-app-ddns-go
         rm -rf ./ddns-go
         
 
-        #git clone --depth=1 https://github.com/sirpdboy/luci-app-ddns-go ./pass
-        #mv ./pass/luci-app-ddns-go ./luci-app-ddns-go
-        #rm -rf ./pass
+        git clone --depth=1 https://github.com/sirpdboy/luci-app-ddns-go ./pass
+        mv ./pass/luci-app-ddns-go ./luci-app-ddns-go
+        rm -rf ./pass
 
         git clone --depth=1 https://github.com/sirpdboy/luci-app-ddns-go ./pass
         mv ./pass/ddns-go ./ddns-go
