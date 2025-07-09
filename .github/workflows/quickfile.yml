@@ -34,16 +34,16 @@ jobs:
     - name: Update.luci-app-quickfile
       run: |
 
-        rm -rf ./quickfile/luci-app-quickfile
+        rm -rf ./luci-app-quickfile
         
          
-        git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
-        mv ./luci-app-quickfile ./quickfile/luci-app-quickfile
+        git clone --depth=1 https://github.com/Jaykwok2999/luci-app-quickfile.git -b main
+        mv ./luci-app-quickfile ./luci-app-quickfile
         #git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
         #mv ./luci-app-quickfile/quickfile ./quickfile/quickfile
         #rm -rf ./luci-app-quickfile
-        sed -i 's/services/nas/g' quickfile/luci-app-quickfile/htdocs/luci-static/resources/view/system/quickfile.js
-        sed -i 's/services/nas/g' quickfile/luci-app-quickfile/root/usr/share/luci/menu.d/luci-app-quickfile.json
+        sed -i 's/services/nas/g' luci-app-quickfile/htdocs/luci-static/resources/view/system/quickfile.js
+        sed -i 's/services/nas/g' luci-app-quickfile/root/usr/share/luci/menu.d/luci-app-quickfile.json
         
         
         
