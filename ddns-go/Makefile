@@ -1,20 +1,18 @@
 # SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021-2023  sirpdboy  <herboy2008@gmail.com>
+# Copyright (C) 2021-2025 sirpdboy  <herboy2008@gmail.com>
 # 
 # This is free software, licensed under the Apache License, Version 2.0 .
 #
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ddns-go
-PKG_VERSION:=6.8.1
+PKG_VERSION:=6.11.2
 PKG_RELEASE:=2
 
-PKG_SOURCE_PROTO:=git
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/jeessy2/ddns-go.git
-PKG_MIRROR_HASH:=0588c8a0b95c7b7a079d4655a8d5e2897ca3258fea71570adc84441934d11ffb
-PKG_SOURCE_VERSION:=a0b54749579565af6019c06fd9bfd4e7790d403e
+PKG_SOURCE_URL:=https://codeload.github.com/jeessy2/ddns-go/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=skip
 
 
 PKG_LICENSE:=AGPL-3.0-only
@@ -51,7 +49,8 @@ define Package/ddns-go/install
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(CURDIR)/file/ddns-go.init $(1)/etc/init.d/ddns-go
-
+	$(INSTALL_DIR) $(1)/usr/libexec
+	$(INSTALL_BIN) $(CURDIR)/file/ddns-go-call.libexec $(1)/usr/libexec/ddns-go-call
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(INSTALL_BIN) $(CURDIR)/file/luci-ddns-go.uci-default $(1)/etc/uci-defaults/luci-ddns-go
 endef
