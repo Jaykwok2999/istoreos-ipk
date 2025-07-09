@@ -1,1 +1,0 @@
-set cmdline_ext="$cmdline_ext $IOMMU_CMDLINE"
