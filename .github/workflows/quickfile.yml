@@ -34,13 +34,12 @@ jobs:
     - name: Update.luci-app-quickfile
       run: |
 
-        rm -rf ./quickfile/luci-app-quickfile
-        #rm -rf ./quickfile/quickfile
+        rm -rf ./quickfile
         
          
         git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
-        mv ./luci-app-quickfile ./quickfile/luci-app-quickfile
-        rm -rf ./luci-app-quickfile
+        mv ./tmp/* ./quickfile
+        rm -rf ./tmp
         #git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
         #mv ./luci-app-quickfile/quickfile ./quickfile/quickfile
         #rm -rf ./luci-app-quickfile
