@@ -38,9 +38,9 @@ jobs:
         
         
          
-        git clone https://github.com/asvow/luci-app-tailscale.git ./tailscale/luci-app-tailscale
-        rm -rf ./.gitignore
-        rm -rf ./LICENSE
+        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
+        mv ./kwrt-packages/luci-app-tailscale ./luci-app-tailscale
+        rm -rf ./kwrt-packages
         
         
         
