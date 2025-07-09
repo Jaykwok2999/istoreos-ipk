@@ -37,8 +37,9 @@ jobs:
         rm -rf ./luci-app-quickfile
         
          
-        git clone --depth=1 https://github.com/Jaykwok2999/luci-app-quickfile.git -b main
+        git clone https://github.com/Jaykwok2999/luci-app-quickfile.git ./tmp/luci-app-quickfile
         mv ./luci-app-quickfile ./luci-app-quickfile
+        rm -rf ./tmp
         #git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
         #mv ./luci-app-quickfile/quickfile ./quickfile/quickfile
         #rm -rf ./luci-app-quickfile
