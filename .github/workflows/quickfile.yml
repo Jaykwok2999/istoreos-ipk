@@ -38,8 +38,7 @@ jobs:
         
          
         git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
-        mv ./luci-app-quickfile/luci-app-quickfil ./quickfile/luci-app-quickfile
-        rm -rf ./luci-app-quickfile
+        mv ./luci-app-quickfile ./quickfile/luci-app-quickfile
         #git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
         #mv ./luci-app-quickfile/quickfile ./quickfile/quickfile
         #rm -rf ./luci-app-quickfile
