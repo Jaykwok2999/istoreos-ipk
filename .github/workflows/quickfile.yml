@@ -38,7 +38,7 @@ jobs:
         
          
         git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
-        mv ./tmp/* ./quickfile
+        mv ./tmp/quickfile ./quickfile
         rm -rf ./tmp
         #git clone --depth=1 https://github.com/sbwml/luci-app-quickfile.git -b main
         #mv ./luci-app-quickfile/quickfile ./quickfile/quickfile
