@@ -37,11 +37,11 @@ jobs:
         rm -rf ./luci-app-quickfile
         rm -rf ./quickfile
          
-        git clone https://github.com/Jaykwok2999/luci-app-quickfile.git ./tmp
-        mv ./tmp/* ./
-        rm -rf ./tmp
-        rm -rf ./README.md
-        rm -rf ./LICENSE
+        #git clone https://github.com/Jaykwok2999/luci-app-quickfile.git ./tmp
+        #mv ./tmp/* ./
+        #rm -rf ./tmp
+        #rm -rf ./README.md
+        #rm -rf ./LICENSE
         
         
         
