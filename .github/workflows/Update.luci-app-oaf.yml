@@ -34,13 +34,15 @@ jobs:
     - name: Update.luci-app-oaf
       run: |
 
-        rm -rf ./oaf/luci-app-oaf
+        rm -rf ./oaf/*
         
         
          
-        git clone --depth=1 https://github.com/jjm2473/OpenAppFilter.git -b dev6
-        mv ./OpenAppFilter/luci-app-oaf ./oaf/luci-app-oaf
-        rm -rf ./OpenAppFilter
+        git clone https://github.com/jjm2473/OpenAppFilter.git -b dev6 ./oaf/tmp
+        mv ./oaf/tmp/luci-app-oaf ./oaf/
+        mv ./oaf/tmp/oaf ./oaf/
+        mv ./oaf/tmp/open-app-filter ./oaf/
+        rm -rf ./oaf/tmp
         sed -i 's/services/network/g' oaf/luci-app-oaf/luasrc/controller/appfilter.lua
         
         
