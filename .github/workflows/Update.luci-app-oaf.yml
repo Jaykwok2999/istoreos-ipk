@@ -41,7 +41,7 @@ jobs:
         git clone --depth=1 https://github.com/jjm2473/OpenAppFilter.git -b dev6
         mv ./OpenAppFilter/luci-app-oaf ./oaf/
         rm -rf ./OpenAppFilter
-        sed -i 's/services/network/g' luci-app-oaf/luasrc/controller/appfilter.lua
+        sed -i 's/services/network/g' oaf/luci-app-oaf/luasrc/controller/appfilter.lua
         
         
         
