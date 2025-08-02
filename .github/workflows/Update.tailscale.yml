@@ -34,7 +34,7 @@ jobs:
     - name: Update.tailscale
       run: |
 
-        rm -rf ./tailscale/tailscale
+        rm -rf ./tailscale
         
         
          
