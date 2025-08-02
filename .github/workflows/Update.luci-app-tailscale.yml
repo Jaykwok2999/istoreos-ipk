@@ -34,7 +34,7 @@ jobs:
     - name: Update.tailscale
       run: |
 
-        rm -rf ./tailscale/luci-app-tailscale
+        rm -rf ./luci-app-tailscale
         
         
          
