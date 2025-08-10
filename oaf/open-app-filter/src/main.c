@@ -134,6 +134,7 @@ EXIT:
 
 void af_load_global_config(af_global_config_t *config){
     int ret = 0;
+	char lan_ifname[32] = {0};
     struct uci_context *ctx = uci_alloc_context();
     if (!ctx)
         return;
@@ -179,9 +180,11 @@ void af_load_global_config(af_global_config_t *config){
         config->auto_load_engine = ret;
 
 
-    ret = af_uci_get_value(ctx, "appfilter.global.lan_ifname", config->lan_ifname, 16);
-	if (ret != 0)
-		strcpy(config->lan_ifname, "br-lan");
+    ret = af_uci_get_value(ctx, "appfilter.global.disable_hnat", lan_ifname, sizeof(lan_ifname));
+	if (ret < 0)
+		strncpy(config->lan_ifname, "br-lan", sizeof(config->lan_ifname) - 1);
+	else
+		strncpy(config->lan_ifname, lan_ifname, sizeof(config->lan_ifname) - 1);
 
     uci_free_context(ctx);
     LOG_INFO("enable=%d, user_mode=%d, work_mode=%d", config->enable, config->user_mode, config->work_mode);
@@ -200,8 +203,7 @@ void update_oaf_proc_value(char *key, char *value){
     char old_value[128] = {0};
     sprintf(file_path, "/proc/sys/oaf/%s", key);
 
-    if (af_read_file_value(file_path, old_value, sizeof(old_value)) == -1)
-        return;
+    af_read_file_value(file_path, old_value, sizeof(old_value));    
     if (strcmp(old_value, value) != 0){
         sprintf(cmd_buf, "echo %s >/proc/sys/oaf/%s", value, key);
         system(cmd_buf);
@@ -223,14 +225,14 @@ void update_lan_ip(void){
     char cmd_buf[128] = {0};
     u_int32_t lan_ip = 0;
 	u_int32_t lan_mask = 0;
-    char lan_ifname[16] = {0};
+    char lan_ifname[32] = {0};
     char ip_cmd_buf[128] = {0};
     char mask_cmd_buf[128] = {0};
     struct uci_context *ctx = uci_alloc_context();
     if (!ctx)
         return;
-
-    int ret = af_uci_get_value(ctx, "appfilter.global.lan_ifname", lan_ifname, 16);
+	
+    int ret = af_uci_get_value(ctx, "appfilter.global.lan_ifname", lan_ifname, sizeof(lan_ifname) - 1);
     if (ret != 0){
         strcpy(lan_ifname, "br-lan");
     }
@@ -347,12 +349,25 @@ void update_oaf_status(void){
     int cur_enable = 0;
     if(g_af_config.global.enable == 1){
 		ret = af_check_time(&g_af_config.time);
+		if (ret == 1){
+			system("echo 1 >/proc/sys/oaf/enable");
+		}
+		else{
+			system("echo 0 >/proc/sys/oaf/enable");
+		}
 	}
-    update_oaf_proc_value("enable", ret==1?"1":"0");
+	else{
+		system("echo 0 >/proc/sys/oaf/enable");
+	}
 }
 
 void update_oaf_record_status(void){
-    update_oaf_proc_value("record_enable", g_af_config.global.record_enable==1?"1":"0");
+    if(g_af_config.global.record_enable == 1){
+        system("echo 1 >/proc/sys/oaf/record_enable");
+    }
+    else{
+        system("echo 0 >/proc/sys/oaf/record_enable");
+    }
 }
 
 void af_hnat_init(void){
@@ -361,7 +376,7 @@ void af_hnat_init(void){
     }
     if (g_hnat_init == 0){
         LOG_INFO("disable hnat...\n");
-        system("/usr/libexec/oaf/hnat.sh");
+        system("/usr/bin/hnat.sh");
         g_hnat_init = 1;
     }
 }
@@ -424,7 +439,7 @@ int af_load_feature_to_kernel(void){
 }
 
 int reload_feature(void){
-    system("/usr/libexec/oaf/gen_class.sh /tmp/feature.cfg");
+    system("gen_class.sh /tmp/feature.cfg");
     init_app_name_table();
     init_app_class_name_table();
     if (af_load_feature_to_kernel() < 0){
@@ -464,7 +479,7 @@ void dev_list_timeout_handler(struct uloop_timeout *t)
     }
 
 
-    if (appfilter_nl_fd.fd < 0 && access("/proc/sys/oaf", F_OK) == 0){
+    if (appfilter_nl_fd.fd < 0){
         appfilter_nl_fd.fd = appfilter_nl_init();
         if (appfilter_nl_fd.fd > 0){
             uloop_fd_add(&appfilter_nl_fd, ULOOP_READ);
