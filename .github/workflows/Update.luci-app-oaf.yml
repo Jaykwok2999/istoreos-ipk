@@ -38,7 +38,7 @@ jobs:
         
         
          
-        git clone https://github.com/jjm2473/OpenAppFilter.git -b dev6 ./oaf/tmp
+        git clone https://github.com/destan19/OpenAppFilter.git -b master ./oaf/tmp
         mv ./oaf/tmp/luci-app-oaf ./oaf/
         mv ./oaf/tmp/oaf ./oaf/
         mv ./oaf/tmp/open-app-filter ./oaf/
