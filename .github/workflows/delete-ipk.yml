@@ -1,4 +1,4 @@
-name: dele.ipk
+name: delete.ipk
 on: 
   repository_dispatch:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 0  
         
-    - name: dele
+    - name: delete
       run: |
 
         rm -rf ./patch/wall-luci/luci-app-homeproxy
