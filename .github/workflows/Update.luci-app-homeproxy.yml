@@ -34,13 +34,13 @@ jobs:
     - name: Update.luci-app-homeproxy
       run: |
 
-        rm -rf ./patch/wall-luci/luci-app-homeproxy
+        rm -rf ./luci-app-homeproxy
         
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/luci-app-homeproxy ./patch/wall-luci/luci-app-homeproxy
-        rm -rf ./kwrt-packages
+        git clone --depth=1 https://github.com/kenzok8/small.git -b master
+        mv ./small/luci-app-homeproxy ./luci-app-homeproxy
+        rm -rf ./small
         
         
         
