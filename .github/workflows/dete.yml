@@ -1,4 +1,4 @@
-name: dete.linkease
+name: dete.ipk
 on: 
   repository_dispatch:
   workflow_dispatch:
