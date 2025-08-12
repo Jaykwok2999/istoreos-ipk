@@ -34,7 +34,7 @@ jobs:
     - name: delete
       run: |
 
-        rm -rf ./patch/wall-luci/luci-app-homeproxy
+        rm -rf ./patch/wall-luci/luci-app-openclash
         
         
          
