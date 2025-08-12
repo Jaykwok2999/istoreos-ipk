@@ -1,11 +1,11 @@
-name: dete.ipk
+name: dele.ipk
 on: 
   repository_dispatch:
   workflow_dispatch:
 
 # 定时触发编译
 #  schedule:
-#    - cron: 0 */1 * * *
+#    - cron: 0 22 * * *
 
 # 点赞☆Star触发编译
 #  watch:
@@ -13,15 +13,15 @@ on:
 
 jobs:
   Update:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Clone Repository
       uses: actions/checkout@v4
 
     - name: Set git
       run : |
-        git config --global user.email "109743406+zijieKwok@users.noreply.github.com"
-        git config --global user.name "zijieKwok"
+        git config --global user.email "194788255+Jaykwok2999@users.noreply.github.com"
+        git config --global user.name "Jaykwok2999"
         sudo timedatectl set-timezone "Asia/Shanghai"
 
     - name: Delete workflow runs
@@ -31,13 +31,18 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 0  
         
-    - name: Update
+    - name: dele
       run: |
 
         rm -rf ./patch/wall-luci/luci-app-homeproxy
-        #rm -rf ./patch/wall-luci/luci-app-openclash
+        
         
          
+        #git clone --depth=1 https://github.com/immortalwrt/luci.git -b openwrt-24.10
+        #mv ./luci/applications/luci-app-vlmcsd ./luci-app-vlmcsd
+        #rm -rf ./luci
+        
+        
         
         
     - name: Apply
