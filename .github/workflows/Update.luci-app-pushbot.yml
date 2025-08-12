@@ -34,7 +34,7 @@ jobs:
     - name: Update.pushbot
       run: |
 
-        rm -rf ./tailscale/luci-app-pushbot
+        rm -rf ./luci-app-pushbot
         
         
          
