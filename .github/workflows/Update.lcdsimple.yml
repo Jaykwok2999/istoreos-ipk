@@ -39,8 +39,8 @@ jobs:
         
          
         git clone --depth=1 https://github.com/linkease/lcdsimple.git -b main
-        mv ./lcdsimple/lcdsimple ./lcdsimple
-        rm -rf ./lcdsimple
+        mv ./linkease/lcdsimple ./lcdsimple
+        rm -rf ./linkease
         
         
         
