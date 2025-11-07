@@ -44,7 +44,7 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 1
           keep_minimum_runs: 0
-          delete_workflow_pattern: 'Auto update packages v2'
+          delete_workflow_pattern: 'Auto update tailscale packages'
         
       - name: SSH connection to Actions
         uses: mxschmitt/action-tmate@v3.13
@@ -173,8 +173,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "${{ matrix.pakcages }}: update to ${{ steps.update.outputs.version }}"
-          committer: smallprogram <smallprogram@foxmail.com>
-          author: smallprogram <smallprogram@foxmail.com>
+          committer: Jaykwok2999 <194788255+Jaykwok2999@users.noreply.github.com>
+          author: Jaykwok2999 <194788255+Jaykwok2999@users.noreply.github.com>
           signoff: false
           branch: patches-${{ matrix.pakcages }}-${{ steps.update.outputs.version }}
           base: main
