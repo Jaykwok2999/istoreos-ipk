@@ -1,4 +1,4 @@
-name: Update.luci-app-tailscale
+name: Update.luci-app-tailscale-community
 on: 
   repository_dispatch:
   workflow_dispatch:
@@ -31,16 +31,16 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 0  
         
-    - name: Update.tailscale
+    - name: Update.luci-app-tailscale-community
       run: |
 
-        rm -rf ./luci-app-tailscale
+        rm -rf ./luci-app-tailscale-community
         
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/luci-app-tailscale ./luci-app-tailscale
-        rm -rf ./kwrt-packages
+        git clone --depth=1 https://github.com/Tokisaki-Galaxy/luci-app-tailscale-community.git -b master
+        mv ./luci-app-tailscale-community/luci-app-tailscale-community ./luci-app-tailscale-community
+        rm -rf ./luci-app-tailscale-community
         
         
         
