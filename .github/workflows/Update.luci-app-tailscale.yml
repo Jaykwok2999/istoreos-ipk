@@ -39,8 +39,8 @@ jobs:
         
          
         git clone --depth=1 https://github.com/Tokisaki-Galaxy/luci-app-tailscale-community.git -b master
-        mv ./Tokisaki-Galaxy/luci-app-tailscale-community ./luci-app-tailscale-community
-        rm -rf ./Tokisaki-Galaxy
+        mv ./luci-app-tailscale-community ./
+        #rm -rf ./Tokisaki-Galaxy
         
         
         
