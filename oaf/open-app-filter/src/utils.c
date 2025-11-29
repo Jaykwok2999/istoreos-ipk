@@ -4,6 +4,11 @@
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <sys/time.h>
 
 
 char *str_trim(char *s) {
@@ -39,12 +44,12 @@ int exec_with_result_line(char *cmd, char *result, int len)
     pclose(fp);
 	return 0;
 }
-
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <arpa/inet.h>
+unsigned int get_timestamp(void)
+{
+    struct timeval cur_time;
+    gettimeofday(&cur_time, NULL);
+    return cur_time.tv_sec;
+}
 
 int check_same_network(char *ip1, char *netmask, char *ip2) {
     struct in_addr addr1, addr2, mask;
@@ -73,14 +78,14 @@ int check_same_network(char *ip1, char *netmask, char *ip2) {
 int af_read_file_value(const char *file_path, char *value, int value_len) {
     FILE *file = fopen(file_path, "r");
     if (!file) {
-        perror("Failed to open file");
+        //perror("Failed to open file");
         return -1;
     }
 
     if (fgets(value, value_len, file) == NULL) {
         perror("Failed to read line from file");
         fclose(file);
-        return -1;
+        return -2;
     }
 
     size_t len = strlen(value);

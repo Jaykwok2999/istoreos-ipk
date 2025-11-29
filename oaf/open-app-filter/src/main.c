@@ -47,6 +47,7 @@ int g_oaf_config_change = 1;
 af_config_t g_af_config;
 int g_hnat_init = 0;
 int g_feature_update = 0;
+int g_feature_update_time = 0;
 void dev_list_timeout_handler(struct uloop_timeout *t);
 
 void af_init_time_status(void){
@@ -187,7 +188,7 @@ void af_load_global_config(af_global_config_t *config){
 		strncpy(config->lan_ifname, lan_ifname, sizeof(config->lan_ifname) - 1);
 
     uci_free_context(ctx);
-    LOG_INFO("enable=%d, user_mode=%d, work_mode=%d", config->enable, config->user_mode, config->work_mode);
+    LOG_DEBUG("enable=%d, user_mode=%d, work_mode=%d\n", config->enable, config->user_mode, config->work_mode);
 }
 
 void af_load_config(af_config_t *config){
@@ -203,11 +204,12 @@ void update_oaf_proc_value(char *key, char *value){
     char old_value[128] = {0};
     sprintf(file_path, "/proc/sys/oaf/%s", key);
 
-    af_read_file_value(file_path, old_value, sizeof(old_value));    
+    if (af_read_file_value(file_path, old_value, sizeof(old_value)) == -1)
+        return;
     if (strcmp(old_value, value) != 0){
         sprintf(cmd_buf, "echo %s >/proc/sys/oaf/%s", value, key);
         system(cmd_buf);
-        LOG_INFO("update %s %s-->%s\n", key, old_value, value);
+        LOG_DEBUG("update %s %s-->%s\n", key, old_value, value);
     }
 }
 
@@ -259,6 +261,7 @@ void update_lan_ip(void){
         lan_mask = mask_addr.s_addr;
         update_oaf_proc_u32_value("lan_mask", lan_mask);
     }
+	uci_free_context(ctx);
 }
 
 
@@ -349,25 +352,12 @@ void update_oaf_status(void){
     int cur_enable = 0;
     if(g_af_config.global.enable == 1){
 		ret = af_check_time(&g_af_config.time);
-		if (ret == 1){
-			system("echo 1 >/proc/sys/oaf/enable");
-		}
-		else{
-			system("echo 0 >/proc/sys/oaf/enable");
-		}
 	}
-	else{
-		system("echo 0 >/proc/sys/oaf/enable");
-	}
+    update_oaf_proc_value("enable", ret==1?"1":"0");
 }
 
 void update_oaf_record_status(void){
-    if(g_af_config.global.record_enable == 1){
-        system("echo 1 >/proc/sys/oaf/record_enable");
-    }
-    else{
-        system("echo 0 >/proc/sys/oaf/record_enable");
-    }
+    update_oaf_proc_value("record_enable", g_af_config.global.record_enable==1?"1":"0");
 }
 
 void af_hnat_init(void){
@@ -375,7 +365,7 @@ void af_hnat_init(void){
         return;
     }
     if (g_hnat_init == 0){
-        LOG_INFO("disable hnat...\n");
+        LOG_DEBUG("disable hnat...\n");
         system("/usr/bin/hnat.sh");
         g_hnat_init = 1;
     }
@@ -446,9 +436,30 @@ int reload_feature(void){
         LOG_ERROR("Failed to load feature to kernel\n");
         return -1;
     }
+    clean_invalid_app_records();
+    clear_device_app_statistics();
     LOG_WARN("reload feature success\n");
+    g_feature_update_time = get_timestamp();
     return 0;
 }
+
+
+void check_date_change(void)
+{
+    static int last_day = -1;
+    time_t now = time(NULL);
+    struct tm *tm_info = localtime(&now);
+    int current_day = tm_info->tm_mday;
+    if (last_day != current_day )
+    {
+        LOG_WARN("day changed: %d -> %d\n",last_day, current_day);
+        if (last_day != -1){
+            clear_device_app_statistics();
+        }
+        last_day = current_day;
+    }
+}
+
 
 void dev_list_timeout_handler(struct uloop_timeout *t)
 {
@@ -458,13 +469,15 @@ void dev_list_timeout_handler(struct uloop_timeout *t)
         update_dev_list();
     }
     if (count % 60 == 0){
+		LOG_DEBUG("begin check dev count = %d\n", count);
         check_dev_visit_info_expire();
+        flush_expire_visit_info();
         update_lan_ip();
         if (check_dev_expire()){
             flush_dev_expire_node();
         }
-        flush_expire_visit_info();
         update_oaf_status();
+		check_date_change();
         dump_dev_list();
     }
     if (g_oaf_config_change == 1){
@@ -479,7 +492,7 @@ void dev_list_timeout_handler(struct uloop_timeout *t)
     }
 
 
-    if (appfilter_nl_fd.fd < 0){
+    if (appfilter_nl_fd.fd < 0 && access("/proc/sys/oaf", F_OK) == 0){
         appfilter_nl_fd.fd = appfilter_nl_init();
         if (appfilter_nl_fd.fd > 0){
             uloop_fd_add(&appfilter_nl_fd, ULOOP_READ);

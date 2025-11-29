@@ -43,12 +43,6 @@ unsigned int hash_mac(unsigned char *mac)
     else
         return mac[0] & (MAX_DEV_NODE_HASH_SIZE - 1);
 }
-int get_timestamp(void)
-{
-    struct timeval cur_time;
-    gettimeofday(&cur_time, NULL);
-    return cur_time.tv_sec;
-}
 
 int hash_appid(int appid)
 {
@@ -81,11 +75,6 @@ void init_dev_node_htable()
 dev_node_t *add_dev_node(char *mac)
 {
     unsigned int hash = 0;
-    if (g_cur_user_num >= MAX_SUPPORT_USER_NUM)
-    {
-        printf("error, user num reach max %d\n", g_cur_user_num);
-        return NULL;
-    }
     hash = hash_mac(mac);
     if (hash >= MAX_DEV_NODE_HASH_SIZE)
     {
@@ -179,6 +168,8 @@ void update_dev_hostname(void)
         if (!node)
         {
             node = add_dev_node(mac_buf);
+			if (!node)
+				continue;
             strncpy(node->ip, ip_buf, sizeof(node->ip));
             node->online = 0;
             node->offline_time = get_timestamp();
@@ -221,6 +212,38 @@ void update_dev_nickname(void)
         strncpy(node->nickname, nickname_buf, sizeof(node->nickname));
     }   
     printf("update dev nickname ok\n");
+    uci_free_context(uci_ctx);
+}
+
+
+void clean_dev_whitelist_flag_iter(void *arg, dev_node_t *node)
+{
+    node->is_whitelist = 0;
+}
+
+void clean_dev_whitelist_flag(void)
+{
+    dev_foreach(NULL, clean_dev_whitelist_flag_iter);
+}
+
+
+void update_dev_whitelist_flag(void)
+{
+    clean_dev_whitelist_flag();
+    dev_node_t *node = NULL;
+    struct uci_context *uci_ctx = uci_alloc_context();
+    if (!uci_ctx) {
+        return;
+    }
+    char mac_str[128] = {0};
+    int num = af_get_uci_list_num(uci_ctx, "appfilter", "whitelist");
+    for (int i = 0; i < num; i++) {
+        af_uci_get_array_value(uci_ctx, "appfilter.@whitelist[%d].mac", i, mac_str, sizeof(mac_str));
+        node = find_dev_node(mac_str);
+        if (node) {
+            node->is_whitelist = 1;
+        }
+    }
     uci_free_context(uci_ctx);
 }
 
@@ -289,7 +312,7 @@ void update_dev_online_status(void)
     update_dev_from_oaf();
 }
 
-#define DEV_OFFLINE_TIME (SECONDS_PER_DAY * 3)
+#define DEV_OFFLINE_TIME (SECONDS_PER_DAY * 7)
 
 int check_dev_expire(void)
 {
@@ -478,12 +501,11 @@ void dump_dev_list(void)
 EXIT:
     fclose(fp);
 }
-// 记录最大保存时间 todo: support config
-#define MAX_RECORD_TIME (3 * 24 * 60 * 60) // 7day
-// 超过1天后清除短时间的记录
-#define RECORD_REMAIN_TIME (24 * 60 * 60) // 1day
-#define INVALID_RECORD_TIME (5 * 60)      // 5min
 
+#define MAX_RECORD_TIME (3 * 24 * 60 * 60) // 3day
+// 超过1天后清除短时间的记录
+#define RECORD_REMAIN_TIME (60 * 60) // 1hour
+#define INVALID_RECORD_TIME (5 * 60)      // 5min
 void check_dev_visit_info_expire(void)
 {
     int i, j;
@@ -499,6 +521,7 @@ void check_dev_visit_info_expire(void)
                 visit_info_t *p_info = node->visit_htable[j];
                 while (p_info)
                 {
+					
                     int total_time = p_info->latest_time - p_info->first_time;
                     int interval_time = cur_time - p_info->first_time;
                     if (interval_time > MAX_RECORD_TIME || interval_time < 0)
@@ -510,6 +533,7 @@ void check_dev_visit_info_expire(void)
                         if (total_time < INVALID_RECORD_TIME)
                             p_info->expire = 1;
                     }
+					LOG_DEBUG("[%s] appid:%d total_time:%ds interval:%ds, expire = %d\n", node->mac, p_info->appid, total_time, interval_time, p_info->expire);
                     p_info = p_info->next;
                 }
             }
@@ -536,6 +560,7 @@ void flush_expire_visit_info(void)
                 {
                     if (p_info->expire)
                     {
+                        LOG_DEBUG("check expire,flush expire visit info: %s, appid=%d\n", node->mac, p_info->appid);
                         if (NULL == prev)
                         {
                             node->visit_htable[j] = p_info->next;
@@ -605,4 +630,56 @@ void dump_dev_visit_list(void)
     }
 EXIT:
     fclose(fp);
+}
+
+void clean_invalid_app_records(void)
+{
+    int i, j;
+    int invalid_count = 0;
+    int total_count = 0;
+    
+    for (i = 0; i < MAX_DEV_NODE_HASH_SIZE; i++)
+    {
+        dev_node_t *node = dev_hash_table[i];
+        while (node)
+        {
+            for (j = 0; j < MAX_VISIT_HASH_SIZE; j++)
+            {
+                visit_info_t *p_info = node->visit_htable[j];
+                while (p_info)
+                {
+                    total_count++;
+                    char *app_name = get_app_name_by_id(p_info->appid);
+                    if (app_name && strlen(app_name) == 0)
+                    {
+                        p_info->expire = 1;
+                        invalid_count++;
+                        LOG_DEBUG("clean: MAC=%s, AppID=%d\n", node->mac, p_info->appid);
+                    }
+                    p_info = p_info->next;
+                }
+            }
+            node = node->next;
+        }
+    }
+    if (invalid_count > 0)
+    {
+        flush_expire_visit_info();
+    }
+}
+
+void clear_device_app_statistics(void)
+{
+    int i;
+    
+    for (i = 0; i < MAX_DEV_NODE_HASH_SIZE; i++)
+    {
+        dev_node_t *node = dev_hash_table[i];
+        while (node)
+        {
+            memset(node->stat, 0, sizeof(node->stat));
+            node = node->next;
+        }
+    }
+    
 }
