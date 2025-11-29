@@ -34,7 +34,7 @@ jobs:
     - name: Update.luci-app-oaf
       run: |
 
-        rm -rf ./oaf/*
+        rm -rf ./oaf
         
         
          
