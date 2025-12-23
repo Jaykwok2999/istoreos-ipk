@@ -40,6 +40,7 @@ jobs:
          
         git clone --depth=1 https://github.com/Tokisaki-Galaxy/luci-app-tailscale-community.git ./pass
         mv ./pass/luci-app-tailscale-community ./luci-app-tailscale-community
+        sed -i 's/services/network/g' luci-app-tailscale-community/root/usr/share/luci/menu.d/luci-app-tailscale-community.json
         rm -rf ./pass
         
         
