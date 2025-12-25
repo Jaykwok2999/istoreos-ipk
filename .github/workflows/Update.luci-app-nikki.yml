@@ -39,10 +39,10 @@ jobs:
         
          
         git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git -b main
-        mv ./OpenWrt-nikki/nikki ./nikki/nikki
+        mv ./OpenWrt-nikki/nikki ./nikki/
         rm -rf ./OpenWrt-nikki
         git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git -b main
-        mv ./OpenWrt-nikki/luci-app-nikki ./nikki/luci-app-nikki
+        mv ./OpenWrt-nikki/luci-app-nikki ./nikki/
         rm -rf ./OpenWrt-nikki
         
         
