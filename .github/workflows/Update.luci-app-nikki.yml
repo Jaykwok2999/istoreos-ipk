@@ -34,16 +34,17 @@ jobs:
     - name: Update.nikki
       run: |
 
-        rm -rf ./nikki/luci-app-nikki
-        rm -rf ./nikki/nikki
+        rm -rf ./luci-app-nikki
+        rm -rf ./nikki
         
-         
-        git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git -b main
-        mv ./OpenWrt-nikki/nikki ./nikki/nikki
-        rm -rf ./OpenWrt-nikki
-        git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git -b main
-        mv ./OpenWrt-nikki/luci-app-nikki ./nikki/
-        rm -rf ./OpenWrt-nikki
+
+        git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki ./pass
+        mv ./pass/luci-app-nikki ./luci-app-nikki
+        rm -rf ./pass
+
+        git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki ./pass
+        mv ./pass/nikki ./nikki
+        rm -rf ./pass
         
         
         
