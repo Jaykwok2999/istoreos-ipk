@@ -31,18 +31,18 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 0  
         
-    - name: Update.luci-app-nikki
+    - name: Update.nikki
       run: |
 
-        rm -rf ./op-nikki/luci-app-nikki
-        rm -rf ./op-nikki/nikki
+        rm -rf ./nikki/luci-app-nikki
+        rm -rf ./nikki/nikki
         
          
         git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git -b main
-        mv ./OpenWrt-nikki/nikki ./op-nikki/nikki
+        mv ./OpenWrt-nikki/nikki ./nikki/nikki
         rm -rf ./OpenWrt-nikki
         git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git -b main
-        mv ./OpenWrt-nikki/luci-app-nikki ./op-nikki/luci-app-nikki
+        mv ./OpenWrt-nikki/luci-app-nikki ./nikki/luci-app-nikki
         rm -rf ./OpenWrt-nikki
         
         
