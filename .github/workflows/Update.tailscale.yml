@@ -38,11 +38,9 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/Jaykwok2999/tailscale.git -b main
-        mv ./tailscale/tailscale ./tailscale/
-        rm -rf ./tailscale
-        #rm -rf ./tailscale/Makefile
-        #cp -af ./patch/tailscale/Makefile tailscale/
+        git clone --depth=1 https://github.com/Jaykwok2999/tailscale ./pass
+        mv ./pass/tailscale ./tailscale
+        rm -rf ./pass
         
         
         
