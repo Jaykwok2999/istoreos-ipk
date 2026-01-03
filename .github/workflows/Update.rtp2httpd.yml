@@ -39,7 +39,7 @@ jobs:
         
          
         git clone https://github.com/stackia/rtp2httpd ./pass
-        mv ./pass/openwrt-support/* ./rtp2httpd/
+        mv ./pass/openwrt-support ./rtp2httpd/
         rm -rf ./pass
         
     - name: Apply
