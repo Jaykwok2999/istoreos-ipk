@@ -1,9 +1,5 @@
 #!/bin/sh /etc/rc.common
 
-# Copyright 2020 Google LLC.
-# Copyright (C) 2021 CZ.NIC z.s.p.o. (https://www.nic.cz/)
-# SPDX-License-Identifier: Apache-2.0
-
 START=90
 
 USE_PROCD=1
@@ -22,7 +18,7 @@ section_enabled() {
 	[ $enabled -gt 0 ]
 }
 
-configure_service() {
+tailscale_helper() {
 	local cfg="$1"
 	local accept_routes hostname accept_dns advertise_exit_node exit_node advertise_routes disable_snat_subnet_routes subnet_routes access flags login_server authkey std_out std_err
 
@@ -104,7 +100,7 @@ start_instance() {
 	procd_set_param stderr "$std_err"
 	procd_close_instance
 
-	configure_service "$cfg"
+	tailscale_helper "$cfg"
 }
 
 start_service() {
