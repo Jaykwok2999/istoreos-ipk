@@ -38,7 +38,7 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/Jaykwok2999/tailscale ./pass
+        git clone --depth=1 https://github.com/Jaykwok2999/luci-app-tailscale ./pass
         mv ./pass/tailscale ./tailscale
         rm -rf ./pass
         
