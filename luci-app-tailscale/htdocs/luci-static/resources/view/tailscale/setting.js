@@ -141,6 +141,7 @@ return view.extend({
 		s.tab('basic', _('Basic Settings'));
 
 		o = s.taboption('basic', form.Flag, 'enabled', _('Enable'));
+		o.default = o.disabled;
 		o.rmempty = false;
 
 		o = s.taboption('basic', form.DummyValue, 'login_status', _('Login Status'));
@@ -165,16 +166,17 @@ return view.extend({
 		o.rmempty = false;
 
 		o = s.taboption('basic', form.Flag, 'log_stdout', _('StdOut Log'), _('Logging program activities.'));
-		o.default = true;
+		o.default = o.enabled;
 		o.rmempty = false;
 
 		o = s.taboption('basic', form.Flag, 'log_stderr', _('StdErr Log'), _('Logging program errors and exceptions.'));
-		o.default = true;
+		o.default = o.enabled;
 		o.rmempty = false;
 
 		s.tab('advance', _('Advanced Settings'));
 
 		o = s.taboption('advance', form.Flag, 'accept_routes', _('Accept Routes'), _('Accept subnet routes that other nodes advertise.'));
+		o.default = o.disabled;
 		o.rmempty = false;
 
 		o = s.taboption('advance', form.Value, 'hostname', _('Device Name'), _("Leave blank to use the device's hostname."));
@@ -182,10 +184,11 @@ return view.extend({
 		o.rmempty = true;
 
 		o = s.taboption('advance', form.Flag, 'accept_dns', _('Accept DNS'), _('Accept DNS configuration from the Tailscale admin console.'));
-		o.default = true;
+		o.default = o.enabled;
 		o.rmempty = false;
 
 		o = s.taboption('advance', form.Flag, 'advertise_exit_node', _('Exit Node'), _('Offer to be an exit node for outbound internet traffic from the Tailscale network.'));
+		o.default = o.disabled;
 		o.rmempty = false;
 
 		o = s.taboption('advance', form.ListValue, 'exit_node', _('Online Exit Nodes'), _('Select an online machine name to use as an exit node.'));
@@ -208,9 +211,11 @@ return view.extend({
 				o.value(subnet, subnet);
 			});
 		}
+		o.default = '';
 		o.rmempty = true;
 
 		o = s.taboption('advance', form.Flag, 'disable_snat_subnet_routes', _('Site To Site'), _('Use site-to-site layer 3 networking to connect subnets on the Tailscale network.'));
+		o.default = o.disabled;
 		o.depends('accept_routes', '1');
 		o.rmempty = false;
 
