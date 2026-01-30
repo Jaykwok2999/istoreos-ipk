@@ -1,8 +1,7 @@
 --[[
 DDNSTO LuCI Controller + JSON API
 =================================
-
-目标
+ 
 ----
 为 ddnsto 的 LuCI 页面（可用原生 JS/React/Vue）提供稳定的后端接口：
 1) 读取/更新 UCI 配置：/etc/config/ddnsto
@@ -37,7 +36,8 @@ LuCI 对 POST 通常要求 token 校验。这里提供两种方式（二选一�
 开发/调试注意
 ------------
 1) 修改 controller 后，LuCI 可能缓存索引：
-   - rm -f /tmp/luci-indexcache /tmp/luci-indexcache.*
+   - rm -f /tmp/luci-indexcache
+   - /etc/init.d/uhttpd restart  （或重启设备）
 2) 确保 /etc/config/ddnsto 存在；否则 index() 会直接 return。
 3) 若想扩展更多字段（如 address），建议在 GET 返回里带出，但 POST 仅允许白名单字段写入。
 
@@ -88,14 +88,6 @@ local function read_json_body()
   return obj
 end
 
-local function get_command2(cmd)
-  local f = io.popen(cmd, "r")
-  if not f then return "" end
-  local out = f:read("*l") or ""
-  f:close()
-  return (out:gsub("^%s+", ""):gsub("%s+$", ""))
-end
-
 local function get_command(cmd)
     local handle = io.popen(cmd, "r")
     if handle then
@@ -105,6 +97,30 @@ local function get_command(cmd)
     end
     return ""
     
+end
+
+local function parse_device_id(raw)
+  local cleaned = tostring(raw or "")
+  cleaned = cleaned:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+  if cleaned == "" then
+    return ""
+  end
+  local _, did = cleaned:match("^(%S+)%s+(%S+)$")
+  return did or cleaned
+end
+
+local function normalize_index(index)
+  local idx = index
+  if not (idx and tostring(idx):match("^%d+$")) then
+    idx = "0"
+  end
+  return idx
+end
+
+local function fetch_device_id(index)
+  local idx = normalize_index(index)
+  local cmd = string.format("/usr/sbin/ddnstod -x %s -w", idx)
+  return parse_device_id(get_command(cmd))
 end
 
 local function param(body, key)
@@ -220,12 +236,7 @@ local function read_config()
   end)
 
   do
-    local idx = cfg.index
-    if not (idx and tostring(idx):match("^%d+$")) then
-      idx = "0"
-    end
-    local cmd = string.format("/usr/sbin/ddnstod -x %s -w | awk '{print $2}'", idx)
-    local did = get_command(cmd)
+    local did = fetch_device_id(cfg.index)
     cfg.device_id = did
     cfg.deviceId = did
   end
@@ -282,6 +293,7 @@ function index()
   entry({"admin", "services", "ddnsto", "api", "stop"},    call("api_stop")).leaf = true
   entry({"admin", "services", "ddnsto", "api", "onboarding", "start"}, call("api_onboarding_start")).leaf = true
   entry({"admin", "services", "ddnsto", "api", "onboarding", "address"}, call("api_onboarding_address")).leaf = true
+  entry({"admin", "services", "ddnsto", "api", "connectivity"},  call("api_connectivity")).leaf = true
   entry({"admin", "services", "ddnsto", "api", "status"},  call("api_status")).leaf = true
   entry({"admin", "services", "ddnsto", "api", "logs"},    call("api_logs")).leaf = true
 end
@@ -419,7 +431,7 @@ end
 -- API: service
 -- ==========
 
-function api_service()
+local function run_service_action(action, allow_reload)
   local http = require "luci.http"
   local sys = require "luci.sys"
   local method = http.getenv("REQUEST_METHOD") or ""
@@ -431,38 +443,29 @@ function api_service()
 
   if not require_csrf() then return end
 
-  local body = read_json_body()
-  local action = param(body, "action") or ""
+  if not action then
+    local body = read_json_body()
+    action = param(body, "action") or ""
+  end
 
-  if action ~= "start" and action ~= "stop" and action ~= "restart" and action ~= "reload" then
+  local allow = {
+    start = true,
+    stop = true,
+    restart = true,
+    reload = allow_reload == true,
+  }
+
+  if not allow[action] then
     return bad_request("bad action")
   end
 
   local cmd = string.format("/etc/init.d/ddnsto %s >/dev/null 2>&1", action)
   local rc = sys.call(cmd)
-
   write_json({ ok = (rc == 0), rc = rc })
 end
 
-local function run_service_action(action)
-  local http = require "luci.http"
-  local sys = require "luci.sys"
-  local method = http.getenv("REQUEST_METHOD") or ""
-  
-  if method ~= "POST" then
-    method_not_allowed()
-    return
-  end
-
-  if not require_csrf() then return end
-
-  if action ~= "start" and action ~= "stop" and action ~= "restart" then
-    return bad_request("bad action")
-  end
-
-  local cmd = string.format("/etc/init.d/ddnsto %s >/dev/null 2>&1", action)
-  local rc = sys.call(cmd)
-  write_json({ ok = (rc == 0), rc = rc })
+function api_service()
+  return run_service_action(nil, true)
 end
 
 function api_run()
@@ -581,9 +584,35 @@ function api_status()
 
   local version = get_command("/usr/sbin/ddnstod -v")
 
-  -- Check connectivity to the tunnel server via ping
+  local did = ""
+  do
+    did = fetch_device_id(index)
+  end
+
+  write_json({
+    ok = true,
+    data = {
+      enabled = enabled,
+      running = running,
+      pid = pid,
+      token_set = (token and #token > 0) or false,
+      address = address,
+      device_id = did,
+      deviceId = did,
+      hostname = hostname,
+      version = version,
+    }
+  })
+end
+
+-- ==========
+-- API: connectivity (tunnel server reachability)
+-- ==========
+
+function api_connectivity()
+  local sys  = require "luci.sys"
+
   local function resolve_host(host)
-    -- Prefer public DNS to avoid local resolver issues; fallback to default resolver
     local out = sys.exec(string.format("nslookup %s 223.5.5.5 2>/dev/null", host)) or ""
     if out == "" then
       out = sys.exec(string.format("nslookup %s 8.8.8.8 2>/dev/null", host)) or ""
@@ -599,10 +628,8 @@ function api_status()
   local resolved_ip = resolve_host("tunnel.kooldns.cn")
   if resolved_ip ~= "" then table.insert(tunnel_targets, resolved_ip) end
   table.insert(tunnel_targets, "tunnel.kooldns.cn")
-  -- Fallback known IP to avoid DNS issues
   table.insert(tunnel_targets, "125.39.21.43")
 
-  -- Deduplicate targets
   do
     local seen = {}
     local uniq = {}
@@ -616,7 +643,6 @@ function api_status()
   end
 
   local function connect_target(target)
-    -- BusyBox ping: -c 1 (one packet), -W 2 (2s timeout)
     local ret = sys.call(string.format("ping -c 1 -W 2 %s >/dev/null 2>&1", target))
     if ret == 0 then
       return 0, nil
@@ -642,30 +668,12 @@ function api_status()
     end
   end
 
-  local did = ""
-  do
-    local idx = index
-    if not (idx and tostring(idx):match("^%d+$")) then
-      idx = "0"
-    end
-    local cmd = string.format("/usr/sbin/ddnstod -x %s -w | awk '{print $2}'", idx)
-    did = get_command(cmd)
-  end
-
   write_json({
     ok = true,
     data = {
-      enabled = enabled,
-      running = running,
-      pid = pid,
-      token_set = (token and #token > 0) or false,
-      address = address,
-      device_id = did,
-      deviceId = did,
-      hostname = hostname,
-      version = version,
       tunnel_ok = tunnel_ok,
       tunnel_ret = tunnel_ok and nil or tunnel_err,
+      targets = tunnel_targets,
     }
   })
 end
