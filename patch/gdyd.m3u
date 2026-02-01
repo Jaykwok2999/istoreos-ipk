@@ -1,195 +1,195 @@
 ﻿#EXTM3U x-tvg-url="http://epg.51zmt.top:8000/e.xml"
 #EXTINF:-1 tvg-id="1" tvg-name="CCTV1" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV1.png" group-title="央视",CCTV-1
-http://istoreos.5588999.xy:3018/rtp/239.10.0.114:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.114:1025
 #EXTINF:-1 tvg-id="2" tvg-name="CCTV2" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV2.png" group-title="央视",CCTV-2
-http://istoreos.5588999.xy:3018/rtp/239.10.0.207:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.207:1025
 #EXTINF:-1 tvg-id="3" tvg-name="CCTV3" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV3.png" group-title="央视",CCTV-3
-http://istoreos.5588999.xy:3018/rtp/239.10.0.101:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.101:1025
 #EXTINF:-1 tvg-id="4" tvg-name="CCTV4" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV4.png" group-title="央视",CCTV-4
-http://istoreos.5588999.xy:3018/rtp/239.10.0.245:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.245:1025
 #EXTINF:-1 tvg-id="5" tvg-name="CCTV4美洲" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV4mz.png" group-title="央视",CCTV-4美洲
-http://istoreos.5588999.xy:3018/rtp/239.11.0.102:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.102:1025
 #EXTINF:-1 tvg-id="6" tvg-name="CCTV4欧洲" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV4oz.png" group-title="央视",CCTV-4欧洲
-http://istoreos.5588999.xy:3018/rtp/239.11.0.101:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.101:1025
 #EXTINF:-1 tvg-id="7" tvg-name="CCTV5" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV5.png" group-title="央视",CCTV-5
-http://istoreos.5588999.xy:3018/rtp/239.10.0.102:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.102:1025
 #EXTINF:-1 tvg-id="8" tvg-name="CCTV5+" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV5+.png" group-title="央视",CCTV5+
-http://istoreos.5588999.xy:3018/rtp/239.10.0.213:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.213:1025
 #EXTINF:-1 tvg-id="9" tvg-name="CCTV6" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV6.png" group-title="央视",CCTV-6
-http://istoreos.5588999.xy:3018/rtp/239.10.0.103:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.103:1025
 #EXTINF:-1 tvg-id="10" tvg-name="CCTV7" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV7.png" group-title="央视",CCTV-7
-http://istoreos.5588999.xy:3018/rtp/239.10.0.208:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.208:1025
 #EXTINF:-1 tvg-id="11" tvg-name="CCTV8" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV8.png" group-title="央视",CCTV-8
-http://istoreos.5588999.xy:3018/rtp/239.10.0.104:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.104:1025
 #EXTINF:-1 tvg-id="12" tvg-name="CCTV9" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV9.png" group-title="央视",CCTV-9
-http://istoreos.5588999.xy:3018/rtp/239.10.0.209:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.209:1025
 #EXTINF:-1 tvg-id="13" tvg-name="CCTV10" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV10.png" group-title="央视",CCTV-10
-http://istoreos.5588999.xy:3018/rtp/239.10.0.210:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.210:1025
 #EXTINF:-1 tvg-id="14" tvg-name="CCTV11" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV11.png" group-title="央视",CCTV-11
-http://istoreos.5588999.xy:3018/rtp/239.11.0.24:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.24:1025
 #EXTINF:-1 tvg-id="15" tvg-name="CCTV12" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV12.png" group-title="央视",CCTV-12
-http://istoreos.5588999.xy:3018/rtp/239.10.0.211:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.211:1025
 #EXTINF:-1 tvg-id="16" tvg-name="CCTV13" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV13.png" group-title="央视",CCTV-13
-http://istoreos.5588999.xy:3018/rtp/239.10.0.198:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.198:1025
 #EXTINF:-1 tvg-id="17" tvg-name="CCTV14" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV14.png" group-title="央视",CCTV-14
-http://istoreos.5588999.xy:3018/rtp/239.10.0.212:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.212:1025
 #EXTINF:-1 tvg-id="18" tvg-name="CCTV15" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV15.png" group-title="央视",CCTV-15
-http://istoreos.5588999.xy:3018/rtp/239.11.0.25:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.25:1025
 #EXTINF:-1 tvg-id="19" tvg-name="CCTV16" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV16.png" group-title="央视",CCTV-16
 http://liveop.cctv.cn/hls/CCTV16HD/playlist.m3u8
 #EXTINF:-1 tvg-id="20" tvg-name="CCTV17" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/CCTV17.png" group-title="央视",CCTV-17
-http://istoreos.5588999.xy:3018/rtp/239.10.0.244:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.244:1025
 #EXTINF:-1 tvg-id="21" tvg-name="CGTN" tvg-logo="http://epg.51zmt.top:8000/tb1/CCTV/cgtn.png" group-title="央视",CGTN
-http://istoreos.5588999.xy:3018/rtp/239.11.0.103:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.103:1025
 #EXTINF:-1 tvg-id="22" tvg-name="zhuhai" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/zhuhai.png" group-title="广东",珠海新闻
-http://istoreos.5588999.xy:3018/rtp/239.10.0.242:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.242:1025
 #EXTINF:-1 tvg-id="23" tvg-name="zhuhai" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/zhuhai.png" group-title="广东",珠海公共
-http://istoreos.5588999.xy:3018/rtp/239.10.0.65:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.65:1025
 #EXTINF:-1 tvg-id="24" tvg-name="珠江频道" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东珠江
-http://istoreos.5588999.xy:3018/rtp/239.10.0.63:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.63:1025
 #EXTINF:-1 tvg-id="25" tvg-name="广东新闻" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东新闻
-http://istoreos.5588999.xy:3018/rtp/239.10.0.122:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.122:1025
 #EXTINF:-1 tvg-id="26" tvg-name="广东体育" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东体育
-http://istoreos.5588999.xy:3018/rtp/239.10.0.47:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.47:1025
 #EXTINF:-1 tvg-id="27" tvg-name="广东国际" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东国际
-http://istoreos.5588999.xy:3018/rtp/239.10.0.130:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.130:1025
 #EXTINF:-1 tvg-id="28" tvg-name="经济科教" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",经济科教
-http://istoreos.5588999.xy:3018/rtp/239.10.0.112:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.112:1025
 #EXTINF:-1 tvg-id="29" tvg-name="经济科教" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",经济科教
-http://istoreos.5588999.xy:3018/rtp/239.10.0.46:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.46:1025
 #EXTINF:-1 tvg-id="30" tvg-name="南方卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",南方卫视
-http://istoreos.5588999.xy:3018/rtp/239.11.0.78:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.78:1025
 #EXTINF:-1 tvg-id="31" tvg-name="广东影视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东影视
-http://istoreos.5588999.xy:3018/rtp/239.11.0.79:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.79:1025
 #EXTINF:-1 tvg-id="32" tvg-name="广东公共" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东公共
-http://istoreos.5588999.xy:3018/rtp/239.11.0.80:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.80:1025
 #EXTINF:-1 tvg-id="33" tvg-name="广东综艺4K" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东综艺4K
-http://istoreos.5588999.xy:3018/rtp/239.10.0.75:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.75:1025
 #EXTINF:-1 tvg-id="34" tvg-name="广东少儿" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",广东少儿
-http://istoreos.5588999.xy:3018/rtp/239.11.0.81:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.81:1025
 #EXTINF:-1 tvg-id="35" tvg-name="嘉佳卡通" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="广东",嘉佳卡通
-http://istoreos.5588999.xy:3018/rtp/239.10.0.129:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.129:1025
 #EXTINF:-1 tvg-id="36" tvg-name="" tvg-logo="" group-title="广东",江门综合
-http://istoreos.5588999.xy:3018/rtp/239.10.0.219:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.219:1025
 #EXTINF:-1 tvg-id="37" tvg-name="" tvg-logo="" group-title="广东",江门公共
-http://istoreos.5588999.xy:3018/rtp/239.10.0.139:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.139:1025
 #EXTINF:-1 tvg-id="38" tvg-name="" tvg-logo="" group-title="广东",江门教育
-http://istoreos.5588999.xy:3018/rtp/239.10.0.152:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.152:1025
 #EXTINF:-1 tvg-id="39" tvg-name="" tvg-logo="" group-title="广东",云浮综合
-http://istoreos.5588999.xy:3018/rtp/239.11.0.96:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.96:1025
 #EXTINF:-1 tvg-id="40" tvg-name="" tvg-logo="" group-title="广东",云浮公共
-http://istoreos.5588999.xy:3018/rtp/239.11.0.97:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.97:1025
 #EXTINF:-1 tvg-id="41" tvg-name="" tvg-logo="" group-title="广东",韶关综合
-http://istoreos.5588999.xy:3018/rtp/239.11.0.84:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.84:1025
 #EXTINF:-1 tvg-id="42" tvg-name="" tvg-logo="" group-title="广东",韶关公共
-http://istoreos.5588999.xy:3018/rtp/239.11.0.85:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.85:1025
 #EXTINF:-1 tvg-id="43" tvg-name="" tvg-logo="" group-title="广东",湛江新闻
-http://istoreos.5588999.xy:3018/rtp/239.10.0.253:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.253:1025
 #EXTINF:-1 tvg-id="44" tvg-name="" tvg-logo="" group-title="广东",湛江公共
-http://istoreos.5588999.xy:3018/rtp/239.10.0.254:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.254:1025
 #EXTINF:-1 tvg-id="45" tvg-name="" tvg-logo="" group-title="广东",肇庆新闻
-http://istoreos.5588999.xy:3018/rtp/239.11.0.53:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.53:1025
 #EXTINF:-1 tvg-id="46" tvg-name="" tvg-logo="" group-title="广东",肇庆公共
-http://istoreos.5588999.xy:3018/rtp/239.11.0.54:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.54:1025
 #EXTINF:-1 tvg-id="47" tvg-name="" tvg-logo="" group-title="广东",清远综合
-http://istoreos.5588999.xy:3018/rtp/239.11.0.74:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.74:1025
 #EXTINF:-1 tvg-id="48" tvg-name="" tvg-logo="" group-title="广东",清远公共
-http://istoreos.5588999.xy:3018/rtp/239.11.0.75:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.75:1025
 #EXTINF:-1 tvg-id="49" tvg-name="" tvg-logo="" group-title="广东",茂名公共
-http://istoreos.5588999.xy:3018/rtp/239.11.0.99:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.99:1025
 #EXTINF:-1 tvg-id="50" tvg-name="广东卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangdong.png" group-title="卫视",广东卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.45:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.45:1025
 #EXTINF:-1 tvg-id="51" tvg-name="深圳卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/shenzhen.png" group-title="卫视",深圳卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.52:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.52:1025
 #EXTINF:-1 tvg-id="52" tvg-name="东方卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/dongfang.png" group-title="卫视",东方卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.183:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.183:1025
 #EXTINF:-1 tvg-id="53" tvg-name="湖南卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/hunan.png" group-title="卫视",湖南卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.49:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.49:1025
 #EXTINF:-1 tvg-id="54" tvg-name="浙江卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/zhejiang.png" group-title="卫视",浙江卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.50:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.50:1025
 #EXTINF:-1 tvg-id="55" tvg-name="江苏卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/jiangsu.png" group-title="卫视",江苏卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.51:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.51:1025
 #EXTINF:-1 tvg-id="56" tvg-name="北京卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/beijing.png" group-title="卫视",北京卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.131:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.131:1025
 #EXTINF:-1 tvg-id="57" tvg-name="湖北卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/hubei.png" group-title="卫视",湖北卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.134:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.134:1025
 #EXTINF:-1 tvg-id="58" tvg-name="天津卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/tianjin.png" group-title="卫视",天津卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.181:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.181:1025
 #EXTINF:-1 tvg-id="59" tvg-name="河北卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/hebei.png" group-title="卫视",河北卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.79:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.79:1025
 #EXTINF:-1 tvg-id="60" tvg-name="河南卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/henan.png" group-title="卫视",河南卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.154:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.154:1025
 #EXTINF:-1 tvg-id="61" tvg-name="江西卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/jiangxi.png" group-title="卫视",江西卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.80:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.80:1025
 #EXTINF:-1 tvg-id="62" tvg-name="山东卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/shandong.png" group-title="卫视",山东卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.182:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.182:1025
 #EXTINF:-1 tvg-id="63" tvg-name="四川卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/sichuan.png" group-title="卫视",四川卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.204:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.204:1025
 #EXTINF:-1 tvg-id="64" tvg-name="安徽卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/anhui.png" group-title="卫视",安徽卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.203:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.203:1025
 #EXTINF:-1 tvg-id="65" tvg-name="重庆卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/chongqing.png" group-title="卫视",重庆卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.205:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.205:1025
 #EXTINF:-1 tvg-id="66" tvg-name="贵州卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guizhou.png" group-title="卫视",贵州卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.222:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.222:1025
 #EXTINF:-1 tvg-id="67" tvg-name="东南卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/dongnan.png" group-title="卫视",东南卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.77:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.77:1025
 #EXTINF:-1 tvg-id="68" tvg-name="广西卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/guangxi.png" group-title="卫视",广西卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.246:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.246:1025
 #EXTINF:-1 tvg-id="69" tvg-name="辽宁卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/liaoning.png" group-title="卫视",辽宁卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.185:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.185:1025
 #EXTINF:-1 tvg-id="70" tvg-name="黑龙江卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/heilongjiang.png" group-title="卫视",黑龙江卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.133:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.133:1025
 #EXTINF:-1 tvg-id="71" tvg-name="云南卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/yunnan.png" group-title="卫视",云南卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.155:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.155:1025
 #EXTINF:-1 tvg-id="72" tvg-name="陕西卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/shanxi.png" group-title="卫视",陕西卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.161:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.161:1025
 #EXTINF:-1 tvg-id="73" tvg-name="山西卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/shanxi_.png" group-title="卫视",山西卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.162:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.162:1025
 #EXTINF:-1 tvg-id="74" tvg-name="内蒙古卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/neimeng.png" group-title="卫视",内蒙古卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.163:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.163:1025
 #EXTINF:-1 tvg-id="75" tvg-name="青海卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/qinghai.png" group-title="卫视",青海卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.164:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.164:1025
 #EXTINF:-1 tvg-id="76" tvg-name="旅游卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/lvyou.png" group-title="卫视",海南卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.165:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.165:1025
 #EXTINF:-1 tvg-id="77" tvg-name="宁夏卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/ningxia.png" group-title="卫视",宁夏卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.166:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.166:1025
 #EXTINF:-1 tvg-id="78" tvg-name="西藏卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/xizang.png" group-title="卫视",西藏卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.167:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.167:1025
 #EXTINF:-1 tvg-id="79" tvg-name="新疆卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/xinjiang.png" group-title="卫视",新疆卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.168:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.168:1025
 #EXTINF:-1 tvg-id="80" tvg-name="甘肃卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/gansu.png" group-title="卫视",甘肃卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.169:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.169:1025
 #EXTINF:-1 tvg-id="81" tvg-name="兵团卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/bingtuan.png" group-title="卫视",兵团卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.170:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.170:1025
 #EXTINF:-1 tvg-id="82" tvg-name="延边卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/YANBIAN1.png" group-title="卫视",延边卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.140:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.140:1025
 #EXTINF:-1 tvg-id="83" tvg-name="厦门卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/xiamen.png" group-title="卫视",厦门卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.178:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.178:1025
 #EXTINF:-1 tvg-id="84" tvg-name="三沙卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/sansha.png" group-title="卫视",三沙卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.83:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.83:1025
 #EXTINF:-1 tvg-id="85" tvg-name="吉林卫视" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/jilin.png" group-title="卫视",吉林卫视
-http://istoreos.5588999.xy:3018/rtp/239.10.0.81:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.81:1025
 #EXTINF:-1 tvg-id="86" tvg-name="卡酷动画" tvg-logo="http://epg.51zmt.top:8000/tb1/qt/kaku.png" group-title="卫视",卡酷动画
-http://istoreos.5588999.xy:3018/rtp/239.10.0.172:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.172:1025
 #EXTINF:-1 tvg-id="87" tvg-name="金鹰卡通" tvg-logo="http://epg.51zmt.top:8000/tb1/qt/jinyingkatong.png" group-title="卫视",金鹰卡通
-http://istoreos.5588999.xy:3018/rtp/239.10.0.173:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.173:1025
 #EXTINF:-1 tvg-id="88" tvg-name="金鹰纪实" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/jinyingjishi.png" group-title="卫视",金鹰纪实
-http://istoreos.5588999.xy:3018/rtp/239.10.0.206:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.206:1025
 #EXTINF:-1 tvg-id="89" tvg-name="北京纪实" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/beijingjishi.png" group-title="卫视",冬奥纪实
-http://istoreos.5588999.xy:3018/rtp/239.10.0.184:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.184:1025
 #EXTINF:-1 tvg-id="90" tvg-name="上海纪实" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/shanghaijishi.png" group-title="卫视",上海纪实
-http://istoreos.5588999.xy:3018/rtp/239.10.0.78:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.78:1025
 #EXTINF:-1 tvg-id="91" tvg-name="爱上4K" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/aishang4k.png" group-title="卫视",爱上4K
-http://istoreos.5588999.xy:3018/rtp/239.11.0.26:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.26:1025
 #EXTINF:-1 tvg-id="92" tvg-name="CETV-1" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/CETV-1.png" group-title="卫视",CETV-1
-http://istoreos.5588999.xy:3018/rtp/239.10.0.223:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.223:1025
 #EXTINF:-1 tvg-id="93" tvg-name="CETV-2" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/CETV-2.png" group-title="卫视",CETV-2
-http://istoreos.5588999.xy:3018/rtp/239.11.0.35:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.35:1025
 #EXTINF:-1 tvg-id="94" tvg-name="CETV-4" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/CETV-4.png" group-title="卫视",CETV-4
-http://istoreos.5588999.xy:3018/rtp/239.11.0.36:1025
+http://istoreos.5588999.xyz:3018/rtp/239.11.0.36:1025
 #EXTINF:-1 tvg-id="95" tvg-name="求索记录" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/qiousuojilu.png" group-title="卫视",求索记录
-http://istoreos.5588999.xy:3018/rtp/239.10.0.42:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.42:1025
 #EXTINF:-1 tvg-id="96" tvg-name="求索动物" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/qiousuodongwu.png" group-title="卫视",求索动物
-http://istoreos.5588999.xy:3018/rtp/239.10.0.84:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.84:1025
 #EXTINF:-1 tvg-id="97" tvg-name="求索生活" tvg-logo="http://epg.51zmt.top:8000/tb1/ws/qiousuoshenghuo.png" group-title="卫视",求索生活
-http://istoreos.5588999.xy:3018/rtp/239.10.0.86:1025
+http://istoreos.5588999.xyz:3018/rtp/239.10.0.86:1025
