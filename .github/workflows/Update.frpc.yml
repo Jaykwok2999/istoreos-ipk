@@ -39,7 +39,7 @@ jobs:
         
          
         git clone --depth=1 https://github.com/kiddin9/kwrt-packages ./pass
-        mv ./pass/frpc ./frpc
+        mv ./pass/frp ./frpc
         rm -rf ./pass
         
         
