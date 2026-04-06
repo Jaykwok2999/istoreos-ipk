@@ -3718,7 +3718,7 @@ get_config()
    else
       fakeip_range6=$(uci_get_config "fakeip_range6")
    fi
-   [ -z "$fakeip_range6" ] && fakeip_range6="fdfe:dcba:9876::1/64"
+   [ -z "$fakeip_range6" ] && fakeip_range6=0
 
    lan_interface_name=$(uci_get_config "lan_interface_name" || echo 0)
    if [ "$lan_interface_name" = "0" ]; then
