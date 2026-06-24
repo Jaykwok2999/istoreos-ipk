@@ -1491,6 +1491,18 @@ msgstr "Iniciando descarga"
 msgid "Download successful, start pre update test..."
 msgstr "Descarga completa, iniciando pruebas previas a la actualización..."
 
+msgid "opkg update failed or timed out, retrying..."
+msgstr "opkg update falló o expiró, reintentando..."
+
+msgid "opkg update failed, trying pre update test..."
+msgstr "opkg update falló, se sigue intentando la prueba previa..."
+
+msgid "apk update failed or timed out, retrying..."
+msgstr "apk update falló o expiró, reintentando..."
+
+msgid "apk update failed, trying pre update test..."
+msgstr "apk update falló, se sigue intentando la prueba previa..."
+
 msgid "Pre update test failed..."
 msgstr "Las pruebas previas han fallado..."
 
