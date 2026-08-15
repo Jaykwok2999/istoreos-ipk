@@ -20,6 +20,33 @@ FW4=$(command -v fw4)
 skip_proxies_address()
 {
 ruby -ryaml -rYAML -I "/usr/share/openclash" -E UTF-8 -e "
+REG4 = /^((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$/
+REG6 = /^(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))|\[(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))\]$/i
+REG_DOMAIN = /([0-9a-zA-Z-]{1,}\.)+([a-zA-Z]{2,})/
+
+def write_ips_set(ips)
+   return if ips.nil? or ips.empty?
+   firewall_v = '$FW4'.empty? ? 'ipt' : 'nft'
+   set_commands = []
+   ips.each do |ip|
+      next if ip.nil? or ip.empty?
+      if ip.match(REG4) then
+         if firewall_v == 'nft' then
+            set_commands << 'nft add element inet fw4 localnetwork { \"' + ip + '\" } 2>/dev/null'
+         else
+            set_commands << 'ipset add localnetwork \"' + ip + '\" 2>/dev/null'
+         end
+      elsif ip.match(REG6) then
+         if firewall_v == 'nft' then
+            set_commands << 'nft add element inet fw4 localnetwork6 { \"' + ip + '\" } 2>/dev/null'
+         else
+            set_commands << 'ipset add localnetwork6 \"' + ip + '\" 2>/dev/null'
+         end
+      end
+   end
+   system(set_commands.join('; ')) if not set_commands.empty?
+end
+
 begin
    Value = YAML.load_file('$CONFIG_FILE');
 rescue Exception => e
@@ -54,12 +81,12 @@ begin
                         provider_config = YAML.load_file(path, secret: provider['age-secret-key']) rescue nil
                      rescue Exception => e
                         YAML.LOG_WARN('Set Proxies Address Skip: Failed【' + path + ': ' + e.message+'】')
-                        continue
+                        next
                      end
                   else
                      if file_is_age_encrypted
                         if name == 'oixCloud'
-                           YAML.LOG_TIP('Set Proxies Address Skip: Bypass【oixCloud】')
+                           YAML.LOG('Set Proxies Address Skip: Bypass【oixCloud】')
                         else
                            YAML.LOG_WARN('Set Proxies Address Skip: Failed【' + path + '】File is AGE encrypted but no secret key provided')
                         end
@@ -103,14 +130,11 @@ begin
 
    domains_to_resolve = Array.new
    ips = Array.new
-   reg_domain = /([0-9a-zA-Z-]{1,}\.)+([a-zA-Z]{2,})/
-   reg4 = /^((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])$/
-   reg6 = /^(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))|\[(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:){0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))\]$/i
 
    servers_to_process.each do |server|
-      if server.to_s.match(reg4) or server.to_s.match(reg6)
+      if server.to_s.match(REG4) or server.to_s.match(REG6)
          ips.push(server)
-      elsif server.to_s.match(reg_domain)
+      elsif server.to_s.match(REG_DOMAIN)
          domains_to_resolve.push(server)
       end
    end
@@ -119,18 +143,33 @@ begin
    domains_to_resolve.uniq!
 
    if not domains_to_resolve.empty?
+      host = '127.0.0.1'
+      port = IO.popen('uci -q get openclash.config.cn_port').read.strip
+      pw = IO.popen('uci -q get openclash.config.dashboard_password').read.strip
+
       ips_mutex = Mutex.new
       queue = Queue.new
-      domains_to_resolve.each{|d| queue << d}
+      domains_to_resolve.each do |d|
+         queue << [d, 'A']
+         queue << [d, 'AAAA']
+      end
 
       threads = (1..[10, queue.size].min).map do
          Thread.new do
-            while domain = queue.pop(true) rescue nil
-               syscall = '/usr/share/openclash/openclash_debug_dns.lua 2>/dev/null \"' + domain + '\" \"true\"'
+            while task = (queue.pop(true) rescue nil)
+               domain, qtype = task
+               syscall = 'curl -s -m 3 -H \"Authorization: Bearer ' + pw + '\" \"http://' + host + ':' + port + '/dns/query?name=' + domain + '&type=' + qtype + '\" | jsonfilter -e \"@.Answer[*].data\" 2>/dev/null'
                result = IO.popen(syscall).read.split(/\n+/)
                if result
                   ips_mutex.synchronize do
-                     result.each{|ip| ips.push(ip)}
+                     result.each do |ip|
+                        next if ip.nil? or ip.empty?
+                        if qtype == 'AAAA'
+                           ips.push(ip) if ip.match(REG6)
+                        else
+                           ips.push(ip) if ip.match(REG4)
+                        end
+                     end
                   end
                end
             end
@@ -142,28 +181,7 @@ begin
    ips.compact!
    ips.uniq!
 
-   # Add IPs to ipset/nft
-   if not ips.empty? then
-      firewall_v = '$FW4'.empty? ? 'ipt' : 'nft'
-      set_commands = []
-      ips.each do |ip|
-         next if ip.nil? or ip.empty?
-         if ip.match(reg4) then
-            if firewall_v == 'nft' then
-               set_commands << 'nft add element inet fw4 localnetwork { \"' + ip + '\" } 2>/dev/null'
-            else
-               set_commands << 'ipset add localnetwork \"' + ip + '\" 2>/dev/null'
-            end
-         elsif ip.match(reg6) then
-            if firewall_v == 'nft' then
-               set_commands << 'nft add element inet fw4 localnetwork6 { \"' + ip + '\" } 2>/dev/null'
-            else
-               set_commands << 'ipset add localnetwork6 \"' + ip + '\" 2>/dev/null'
-            end
-         end
-      end
-      system(set_commands.join('; ')) if not set_commands.empty?
-   end
+   write_ips_set(ips)
 rescue Exception => e
    YAML.LOG_ERROR('Set Proxies Address Skip: Failed【' + e.message + '】');
 end" 2>/dev/null >> $LOG_FILE
@@ -244,7 +262,7 @@ fi
          LOG_WATCHDOG "Setting Firewall For Rules Order..."
          /etc/init.d/openclash reload "firewall"
          let FIREWALL_RELOAD++
-      elif [ -n "$(ip tuntap list |grep utun)" ] && [ -z "$(ip route list table 354)" ]; then
+      elif [ -n "$(ip link show utun 2>/dev/null)" ] && [ -z "$(ip route list table 354)" ]; then
          ## 路由表检查
          LOG_WATCHDOG "Setting Firewall For IP Rules Table Recreate..."
          /etc/init.d/openclash reload "firewall"
@@ -408,59 +426,59 @@ fi
       if [ "$STREAM_AUTO_SELECT" -ne 0 ]; then
          if [ "$(expr "$STREAM_AUTO_SELECT" % "$stream_auto_select_interval")" -eq 0 ] || [ "$STREAM_AUTO_SELECT" -eq 1 ]; then
             if [ "$stream_auto_select_netflix" -eq 1 ]; then
-               LOG_TIP "【Netflix】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Netflix】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Netflix" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_disney" -eq 1 ]; then
-               LOG_TIP "【Disney Plus】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Disney Plus】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Disney Plus" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_google_not_cn" -eq 1 ]; then
-               LOG_TIP "【Google Not CN】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Google Not CN】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Google" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_ytb" -eq 1 ]; then
-               LOG_TIP "【YouTube Premium】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【YouTube Premium】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "YouTube Premium" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_prime_video" -eq 1 ]; then
-               LOG_TIP "【Amazon Prime Video】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Amazon Prime Video】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Amazon Prime Video" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_hbo_max" -eq 1 ]; then
-               LOG_TIP "【HBO Max】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【HBO Max】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "HBO Max" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_tvb_anywhere" -eq 1 ]; then
-               LOG_TIP "【TVB Anywhere+】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【TVB Anywhere+】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "TVB Anywhere+" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_dazn" -eq 1 ]; then
-               LOG_TIP "【DAZN】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【DAZN】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "DAZN" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_paramount_plus" -eq 1 ]; then
-               LOG_TIP "【Paramount Plus】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Paramount Plus】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Paramount Plus" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_discovery_plus" -eq 1 ]; then
-               LOG_TIP "【Discovery Plus】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Discovery Plus】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Discovery Plus" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_bilibili" -eq 1 ]; then
-               LOG_TIP "【Bilibili】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Bilibili】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Bilibili" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_openai" -eq 1 ]; then
-               LOG_TIP "【OpenAI】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【OpenAI】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "OpenAI" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_claude" -eq 1 ]; then
-               LOG_TIP "【Claude】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Claude】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Claude" >> $LOG_FILE
             fi
             if [ "$stream_auto_select_gemini" -eq 1 ]; then
-               LOG_TIP "【Gemini】Start Auto Select Unlock Proxy..."
+               LOG_INFO "【Gemini】Start Auto Select Unlock Proxy..."
                /usr/share/openclash/openclash_streaming_unlock.lua "Gemini" >> $LOG_FILE
             fi
          fi
@@ -470,6 +488,5 @@ fi
       LOG_ERROR "Streaming Unlock Could not Work Because of Router-Self Proxy Disabled, Exiting..."
    fi
 
-   SLOG_CLEAN
    sleep 60
 done 2>/dev/null

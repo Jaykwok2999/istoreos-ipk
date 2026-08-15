@@ -91,7 +91,7 @@ end
 function readfile(filename)
 	local content, err = fs.readfile(filename)
 	if not content then return nil, err end
-	if content:find("BEGIN AGE ENCRYPTED FILE") then
+	if content:sub(1, 1024):find("BEGIN AGE ENCRYPTED FILE", 1, true) then
 		local keys = get_age_keys(filename)
 		if keys and keys.secret and keys.secret ~= "" then
 			return age_decrypt(keys.secret, content) or content
@@ -296,7 +296,10 @@ function filesize(e)
 	return string.format("%.1f",e)..a[t] or "0.0 KB"
 end
 
-function lanip()
+function lanip(loopback)
+	if loopback then
+		return "127.0.0.1"
+	end
 	local lan_int_name = uci:get("openclash", "@overwrite[0]", "lan_interface_name") or uci:get("openclash", "config", "lan_interface_name") or "0"
 	local lan_ip
 	if lan_int_name == "0" then
@@ -335,16 +338,24 @@ function get_resourse_mtime(path)
         local found = find_case_insensitive_path(path)
         if found then
             real_path = found
+        elseif uci_get_config("config", "small_flash_memory") == "1" then
+            local fallback_path = path:gsub("^/etc/openclash/", "/tmp/etc/openclash/")
+            local fallback_found = find_case_insensitive_path(fallback_path)
+            if fallback_found then
+                real_path = fallback_found
+            else
+                return "File Not Exist"
+            end
         else
             return "File Not Exist"
         end
     end
     local file = fs.readlink(real_path) or real_path
-	local resourse_etag_version = SYS.exec(string.format("source /usr/share/openclash/openclash_etag.sh && GET_ETAG_TIMESTAMP_BY_PATH '%s'", real_path))
+	local resourse_etag_version = SYS.exec(string.format("source /usr/share/openclash/openclash_etag.sh && GET_ETAG_TIMESTAMP_BY_PATH '%s'", file))
     if resourse_etag_version and resourse_etag_version ~= "" then
 		return resourse_etag_version
 	end
-	local resourse_version = os.date("%Y-%m-%d %H:%M:%S", mtime(real_path))
+	local resourse_version = os.date("%Y-%m-%d %H:%M:%S", mtime(file))
 	if resourse_version and resourse_version ~= "" then
         return resourse_version
 	end
@@ -600,16 +611,57 @@ function pkg_type()
 	end
 end
 
---- Returns the installed version of luci-app-openclash.
--- Supports both opkg and apk package managers.
--- @return String containing the version number, or "0" if not found
-function oc_version()
-	local v
-	if pkg_type() == "opkg" then
-		v = SYS.exec("rm -f /var/lock/opkg.lock && opkg status luci-app-openclash 2>/dev/null |grep '^Version:' |awk '{print $2}' |tr -d '\n'")
-	else
-		v = SYS.exec("rm -f /lib/apk/db/lock && apk info luci-app-openclash 2>/dev/null |grep '^luci-app-openclash-[0-9]' |sed 's/luci-app-openclash-//' |tr -d '\n'")
+--- Reads the CDN proxy address list from /usr/share/openclash/res/cdn.list.
+-- Lines starting with "#" are treated as comments and skipped.
+-- @return Table of CDN address strings (deduplicated, in file order)
+function cdn_list()
+	local list = {}
+	local seen = {}
+	local raw = fs.readfile("/usr/share/openclash/res/cdn.list")
+	if raw then
+		for line in raw:gmatch("[^\r\n]+") do
+			line = line:gsub("^%s+", ""):gsub("%s+$", "")
+			if line ~= "" and line:sub(1, 1) ~= "#" and not seen[line] then
+				seen[line] = true
+				list[#list + 1] = line
+			end
+		end
 	end
+	return list
+end
+
+--- Read a field of an installed package directly from the package database
+-- (/usr/lib/opkg/status or /lib/apk/db/installed), avoiding the opkg/apk
+-- binaries and their lock files (/var/lock/opkg.lock, /lib/apk/db/lock).
+-- Safe to call repeatedly/concurrently and never blocks on a lock.
+-- @param pkg   Package name, e.g. "luci-app-openclash" or "libc"
+-- @param field Field name; opkg: "Version"/"Architecture", apk: "V"/"A"
+-- @return String field value, or "" when not found
+function read_pkg_field(pkg, field)
+	local text
+	if pkg_type() == "opkg" then
+		text = fs.readfile("/usr/lib/opkg/status")
+	else
+		text = fs.readfile("/lib/apk/db/installed")
+	end
+	if not text then return "" end
+	text = text:gsub("\r\n", "\n")
+
+	local prefix = (pkg_type() == "opkg") and ("Package: " .. pkg .. "\n") or ("P:" .. pkg .. "\n")
+	local start = text:find(prefix, 1, true)
+	if not start then return "" end
+	local block_end = text:find("\n\n", start + #prefix, true) or #text
+	local block = text:sub(start + #prefix, block_end - 1)
+	local colon = (pkg_type() == "opkg") and ": " or ":"
+	local val = block:match("\n" .. field .. colon .. "([^\r\n]+)")
+	if not val then
+		val = block:match("^" .. field .. colon .. "([^\r\n]+)")
+	end
+	return val or ""
+end
+
+function oc_version()
+	local v = read_pkg_field("luci-app-openclash", pkg_type() == "opkg" and "Version" or "V")
 	if v == "" then
 		v = "0"
 	end
