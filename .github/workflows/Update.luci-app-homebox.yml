@@ -38,12 +38,12 @@ jobs:
         rm -rf ./op-homebox/homebox
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/homebox ./op-homebox/homebox
-        rm -rf ./kwrt-packages
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
-        mv ./kwrt-packages/luci-app-homebox ./op-homebox/luci-app-homebox
-        rm -rf ./kwrt-packages
+        git clone --depth=1 https://github.com/kiddin9/op-packages.git -b main
+        mv ./op-packages/homebox ./op-homebox/homebox
+        rm -rf ./op-packages
+        git clone --depth=1 https://github.com/kiddin9/op-packages.git -b main
+        mv ./op-packages/luci-app-homebox ./op-homebox/luci-app-homebox
+        rm -rf ./op-packages
         
         
         
