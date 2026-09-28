@@ -38,7 +38,7 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages.git -b main
+        git clone --depth=1 https://github.com/kiddin9/op-packages.git -b main
         mv ./kwrt-packages/luci-app-dnsfilter ./luci-app-dnsfilter/
         rm -rf ./kwrt-packages
         
