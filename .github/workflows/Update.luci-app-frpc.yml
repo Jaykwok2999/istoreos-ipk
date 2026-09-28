@@ -38,7 +38,7 @@ jobs:
         
         
          
-        git clone --depth=1 https://github.com/kiddin9/kwrt-packages ./pass
+        git clone --depth=1 https://github.com/kiddin9/op-packages ./pass
         mv ./pass/luci-app-frpc ./luci-app-frpc
         rm -rf ./pass
         
